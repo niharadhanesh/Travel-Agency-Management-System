@@ -1,784 +1,278 @@
-
 {% extends 'base.html' %}
 
-{% load static %}
-
-{% block title %}
-Home - Wanderly Travel Agency
-{% endblock %}
-
+{% block title %}Home - Wanderly Travel Agency{% endblock %}
 
 {% block content %}
 
-<!-- ================= HERO ================= -->
-
+<!-- HERO -->
 <section class="hero">
-
     <div class="hero-overlay"></div>
-
     <div class="container hero-content">
-
         <div class="row">
-
             <div class="col-lg-8">
-
-                <p class="hero-small">
-                    <i class="bi bi-globe-americas"></i>
-                    DISCOVER THE WORLD
-                </p>
-
-                <h1>
-                    Your Journey<br>
-                    <span>Begins Here.</span>
-                </h1>
-
-                <p class="hero-text">
-                    Explore breathtaking destinations, unforgettable
-                    experiences and carefully crafted travel packages
-                    designed just for you.
-                </p>
-
+                <p class="hero-small"><i class="bi bi-globe-americas"></i> DISCOVER THE WORLD</p>
+                <h1>Your Journey<br><span>Begins Here.</span></h1>
+                <p class="hero-text">Explore breathtaking destinations, unforgettable experiences and carefully crafted travel packages designed just for you.</p>
                 <div class="hero-buttons">
-
-                    <a href="#packages" class="btn btn-primary btn-lg">
-                        Explore Packages
-                        <i class="bi bi-arrow-right ms-2"></i>
-                    </a>
-
-                    <a href="#destinations"
-                       class="btn btn-outline-light btn-lg ms-2">
-                        Discover Destinations
-                    </a>
-
+                    <a href="#packages" class="btn btn-primary btn-lg">Explore Packages <i class="bi bi-arrow-right ms-2"></i></a>
+                    <a href="#destinations" class="btn btn-outline-light btn-lg">Discover Destinations</a>
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= SEARCH ================= -->
-
+<!-- SEARCH -->
 <section class="search-section">
-
     <div class="container">
-
         <div class="search-box">
-
             <form>
-
                 <div class="row g-3 align-items-end">
-
                     <div class="col-lg-3">
-
-                        <label>
-                            <i class="bi bi-geo-alt"></i>
-                            Destination
-                        </label>
-
-                        <input
-                            type="text"
-                            class="form-control"
-                            placeholder="Where do you want to go?"
-                        >
-
+                        <label><i class="bi bi-geo-alt"></i> Destination</label>
+                        <input type="text" class="form-control" placeholder="Where do you want to go?">
                     </div>
-
-
                     <div class="col-lg-3">
-
-                        <label>
-                            <i class="bi bi-calendar3"></i>
-                            Travel Date
-                        </label>
-
-                        <input
-                            type="date"
-                            class="form-control"
-                        >
-
+                        <label><i class="bi bi-calendar3"></i> Travel Date</label>
+                        <input type="date" class="form-control">
                     </div>
-
-
                     <div class="col-lg-3">
-
-                        <label>
-                            <i class="bi bi-people"></i>
-                            Travelers
-                        </label>
-
+                        <label><i class="bi bi-people"></i> Travelers</label>
                         <select class="form-select">
-
                             <option>1 Traveler</option>
                             <option>2 Travelers</option>
                             <option>3 Travelers</option>
                             <option>4 Travelers</option>
                             <option>5+ Travelers</option>
-
                         </select>
-
                     </div>
-
-
                     <div class="col-lg-3">
-
-                        <button class="btn btn-primary w-100">
-                            <i class="bi bi-search me-2"></i>
-                            Search Trips
-                        </button>
-
+                        <button type="button" class="btn btn-primary w-100"><i class="bi bi-search me-2"></i> Search Trips</button>
                     </div>
-
                 </div>
-
             </form>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= DESTINATIONS ================= -->
-
+<!-- DESTINATIONS -->
 <section class="section-padding" id="destinations">
-
     <div class="container">
-
         <div class="section-heading text-center">
-
-            <p class="section-label">
-                EXPLORE
-            </p>
-
-            <h2>
-                Popular Destinations
-            </h2>
-
-            <p>
-                Discover beautiful places around the world and create
-                memories that last a lifetime.
-            </p>
-
+            <p class="section-label">EXPLORE</p>
+            <h2>Popular Destinations</h2>
+            <p>Discover beautiful places around the world and create memories that last a lifetime.</p>
         </div>
-
-
         <div class="row g-4 mt-3">
 
-
-            <!-- Kerala -->
-
             <div class="col-lg-4 col-md-6">
-
                 <div class="destination-card">
-
-                    <img
-                        src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=900&q=80"
-                        alt="Kerala"
-                    >
-
+                    <img src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=900&q=80" alt="Kerala">
                     <div class="destination-content">
-
                         <span>India</span>
-
                         <h3>Kerala</h3>
-
-                        <p>
-                            Backwaters, beaches, mountains and beautiful
-                            natural landscapes.
-                        </p>
-
-                        <a href="#">
-                            Explore
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-
+                        <p>Backwaters, beaches, mountains and beautiful natural landscapes.</p>
+                        <a href="#">Explore <i class="bi bi-arrow-right"></i></a>
                     </div>
-
                 </div>
-
             </div>
 
-
-            <!-- Dubai -->
-
             <div class="col-lg-4 col-md-6">
-
                 <div class="destination-card">
-
-                    <img
-                        src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=900&q=80"
-                        alt="Dubai"
-                    >
-
+                    <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=900&q=80" alt="Dubai">
                     <div class="destination-content">
-
                         <span>UAE</span>
-
                         <h3>Dubai</h3>
-
-                        <p>
-                            Luxury shopping, modern architecture and
-                            unforgettable desert adventures.
-                        </p>
-
-                        <a href="#">
-                            Explore
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-
+                        <p>Luxury shopping, modern architecture and unforgettable desert adventures.</p>
+                        <a href="#">Explore <i class="bi bi-arrow-right"></i></a>
                     </div>
-
                 </div>
-
             </div>
 
-
-            <!-- Bali -->
-
             <div class="col-lg-4 col-md-6">
-
                 <div class="destination-card">
-
-                    <img
-                        src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80"
-                        alt="Bali"
-                    >
-
+                    <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80" alt="Bali">
                     <div class="destination-content">
-
                         <span>Indonesia</span>
-
                         <h3>Bali</h3>
-
-                        <p>
-                            Tropical beaches, temples, waterfalls and
-                            peaceful island experiences.
-                        </p>
-
-                        <a href="#">
-                            Explore
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-
+                        <p>Tropical beaches, temples, waterfalls and peaceful island experiences.</p>
+                        <a href="#">Explore <i class="bi bi-arrow-right"></i></a>
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= PACKAGES ================= -->
-
+<!-- PACKAGES -->
 <section class="packages-section section-padding" id="packages">
-
     <div class="container">
-
         <div class="section-heading text-center">
-
-            <p class="section-label">
-                TRAVEL WITH US
-            </p>
-
-            <h2>
-                Featured Packages
-            </h2>
-
-            <p>
-                Carefully designed trips for unforgettable experiences.
-            </p>
-
+            <p class="section-label">TRAVEL WITH US</p>
+            <h2>Featured Packages</h2>
+            <p>Carefully designed trips for unforgettable experiences.</p>
         </div>
-
-
         <div class="row g-4 mt-3">
 
-
-            <!-- Kerala Package -->
-
             <div class="col-lg-4 col-md-6">
-
                 <div class="package-card">
-
                     <div class="package-image">
-
-                        <img
-                            src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=900&q=80"
-                            alt="Kerala"
-                        >
-
-                        <span class="package-badge">
-                            Popular
-                        </span>
-
+                        <img src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=900&q=80" alt="Kerala">
+                        <span class="package-badge">Popular</span>
                     </div>
-
-
                     <div class="package-body">
-
                         <div class="d-flex justify-content-between">
-
-                            <span class="location">
-                                <i class="bi bi-geo-alt"></i>
-                                Kerala, India
-                            </span>
-
-                            <span class="rating">
-                                ★ 4.9
-                            </span>
-
+                            <span class="location"><i class="bi bi-geo-alt"></i> Kerala, India</span>
+                            <span class="rating">&#9733; 4.9</span>
                         </div>
-
-
-                        <h3>
-                            Kerala Explorer
-                        </h3>
-
-
-                        <p>
-                            Experience the best of Kerala with mountains,
-                            backwaters and beautiful beaches.
-                        </p>
-
-
+                        <h3>Kerala Explorer</h3>
+                        <p>Experience the best of Kerala with mountains, backwaters and beautiful beaches.</p>
                         <div class="package-info">
-
-                            <span>
-                                <i class="bi bi-clock"></i>
-                                5 Days / 4 Nights
-                            </span>
-
-                            <span>
-                                <i class="bi bi-people"></i>
-                                2-10
-                            </span>
-
+                            <span><i class="bi bi-clock"></i> 5 Days / 4 Nights</span>
+                            <span><i class="bi bi-people"></i> 2-10</span>
                         </div>
-
-
                         <hr>
-
-
                         <div class="package-bottom">
-
                             <div>
-
-                                <small>
-                                    Starting from
-                                </small>
-
-                                <strong>
-                                    ₹25,000
-                                </strong>
-
+                                <small>Starting from</small>
+                                <strong>&#8377;25,000</strong>
                             </div>
-
-
-                            <a href="#" class="btn btn-primary">
-                                View Details
-                            </a>
-
+                            <a href="#" class="btn btn-primary">View Details</a>
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
 
-
-            <!-- Dubai Package -->
-
             <div class="col-lg-4 col-md-6">
-
                 <div class="package-card">
-
                     <div class="package-image">
-
-                        <img
-                            src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=900&q=80"
-                            alt="Dubai"
-                        >
-
+                        <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=900&q=80" alt="Dubai">
                     </div>
-
-
                     <div class="package-body">
-
                         <div class="d-flex justify-content-between">
-
-                            <span class="location">
-                                <i class="bi bi-geo-alt"></i>
-                                Dubai, UAE
-                            </span>
-
-                            <span class="rating">
-                                ★ 4.8
-                            </span>
-
+                            <span class="location"><i class="bi bi-geo-alt"></i> Dubai, UAE</span>
+                            <span class="rating">&#9733; 4.8</span>
                         </div>
-
-
-                        <h3>
-                            Dubai Adventure
-                        </h3>
-
-
-                        <p>
-                            Discover Dubai's iconic attractions, desert
-                            safari and luxury experiences.
-                        </p>
-
-
+                        <h3>Dubai Adventure</h3>
+                        <p>Discover Dubai's iconic attractions, desert safari and luxury experiences.</p>
                         <div class="package-info">
-
-                            <span>
-                                <i class="bi bi-clock"></i>
-                                4 Days / 3 Nights
-                            </span>
-
-                            <span>
-                                <i class="bi bi-people"></i>
-                                2-8
-                            </span>
-
+                            <span><i class="bi bi-clock"></i> 4 Days / 3 Nights</span>
+                            <span><i class="bi bi-people"></i> 2-8</span>
                         </div>
-
-
                         <hr>
-
-
                         <div class="package-bottom">
-
                             <div>
-
-                                <small>
-                                    Starting from
-                                </small>
-
-                                <strong>
-                                    ₹45,000
-                                </strong>
-
+                                <small>Starting from</small>
+                                <strong>&#8377;45,000</strong>
                             </div>
-
-
-                            <a href="#" class="btn btn-primary">
-                                View Details
-                            </a>
-
+                            <a href="#" class="btn btn-primary">View Details</a>
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
 
-
-            <!-- Bali Package -->
-
             <div class="col-lg-4 col-md-6">
-
                 <div class="package-card">
-
                     <div class="package-image">
-
-                        <img
-                            src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80"
-                            alt="Bali"
-                        >
-
-                        <span class="package-badge">
-                            Best Seller
-                        </span>
-
+                        <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80" alt="Bali">
+                        <span class="package-badge">Best Seller</span>
                     </div>
-
-
                     <div class="package-body">
-
                         <div class="d-flex justify-content-between">
-
-                            <span class="location">
-                                <i class="bi bi-geo-alt"></i>
-                                Bali, Indonesia
-                            </span>
-
-                            <span class="rating">
-                                ★ 4.9
-                            </span>
-
+                            <span class="location"><i class="bi bi-geo-alt"></i> Bali, Indonesia</span>
+                            <span class="rating">&#9733; 4.9</span>
                         </div>
-
-
-                        <h3>
-                            Bali Escape
-                        </h3>
-
-
-                        <p>
-                            Relax on tropical beaches and explore the
-                            cultural beauty of Bali.
-                        </p>
-
-
+                        <h3>Bali Escape</h3>
+                        <p>Relax on tropical beaches and explore the cultural beauty of Bali.</p>
                         <div class="package-info">
-
-                            <span>
-                                <i class="bi bi-clock"></i>
-                                6 Days / 5 Nights
-                            </span>
-
-                            <span>
-                                <i class="bi bi-people"></i>
-                                2-8
-                            </span>
-
+                            <span><i class="bi bi-clock"></i> 6 Days / 5 Nights</span>
+                            <span><i class="bi bi-people"></i> 2-8</span>
                         </div>
-
-
                         <hr>
-
-
                         <div class="package-bottom">
-
                             <div>
-
-                                <small>
-                                    Starting from
-                                </small>
-
-                                <strong>
-                                    ₹55,000
-                                </strong>
-
+                                <small>Starting from</small>
+                                <strong>&#8377;55,000</strong>
                             </div>
-
-
-                            <a href="#" class="btn btn-primary">
-                                View Details
-                            </a>
-
+                            <a href="#" class="btn btn-primary">View Details</a>
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= WHY CHOOSE US ================= -->
-
+<!-- WHY CHOOSE US -->
 <section class="why-section section-padding">
-
     <div class="container">
-
         <div class="section-heading text-center">
-
-            <p class="section-label">
-                WHY WANDERLY
-            </p>
-
-            <h2>
-                Travel Made Simple
-            </h2>
-
+            <p class="section-label">WHY WANDERLY</p>
+            <h2>Travel Made Simple</h2>
         </div>
-
-
         <div class="row g-4 mt-3">
 
-
             <div class="col-lg-3 col-md-6">
-
                 <div class="feature-card">
-
-                    <div class="feature-icon">
-                        <i class="bi bi-wallet2"></i>
-                    </div>
-
-                    <h4>
-                        Best Prices
-                    </h4>
-
-                    <p>
-                        Get carefully planned packages at competitive prices.
-                    </p>
-
+                    <div class="feature-icon"><i class="bi bi-wallet2"></i></div>
+                    <h4>Best Prices</h4>
+                    <p>Get carefully planned packages at competitive prices.</p>
                 </div>
-
             </div>
 
-
             <div class="col-lg-3 col-md-6">
-
                 <div class="feature-card">
-
-                    <div class="feature-icon">
-                        <i class="bi bi-shield-check"></i>
-                    </div>
-
-                    <h4>
-                        Secure Booking
-                    </h4>
-
-                    <p>
-                        Your bookings and personal information are handled securely.
-                    </p>
-
+                    <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+                    <h4>Secure Booking</h4>
+                    <p>Your bookings and personal information are handled securely.</p>
                 </div>
-
             </div>
 
-
             <div class="col-lg-3 col-md-6">
-
                 <div class="feature-card">
-
-                    <div class="feature-icon">
-                        <i class="bi bi-headset"></i>
-                    </div>
-
-                    <h4>
-                        24/7 Support
-                    </h4>
-
-                    <p>
-                        Our team is available to help throughout your journey.
-                    </p>
-
+                    <div class="feature-icon"><i class="bi bi-headset"></i></div>
+                    <h4>24/7 Support</h4>
+                    <p>Our team is available to help throughout your journey.</p>
                 </div>
-
             </div>
 
-
             <div class="col-lg-3 col-md-6">
-
                 <div class="feature-card">
-
-                    <div class="feature-icon">
-                        <i class="bi bi-map"></i>
-                    </div>
-
-                    <h4>
-                        Local Experts
-                    </h4>
-
-                    <p>
-                        Discover destinations with carefully planned experiences.
-                    </p>
-
+                    <div class="feature-icon"><i class="bi bi-map"></i></div>
+                    <h4>Local Experts</h4>
+                    <p>Discover destinations with carefully planned experiences.</p>
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= ABOUT ================= -->
-
+<!-- ABOUT -->
 <section class="about-section section-padding" id="about">
-
     <div class="container">
-
         <div class="row align-items-center g-5">
-
             <div class="col-lg-6">
-
-                <img
-                    src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=80"
-                    class="about-image"
-                    alt="Travel"
-                >
-
+                <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=80" class="about-image" alt="Travel">
             </div>
-
-
             <div class="col-lg-6">
-
-                <p class="section-label">
-                    ABOUT US
-                </p>
-
-                <h2>
-                    We Turn Travel Dreams Into Memories
-                </h2>
-
-                <p>
-                    Wanderly is a modern travel agency focused on creating
-                    memorable journeys for individuals, couples, families
-                    and groups.
-                </p>
-
-                <p>
-                    From choosing the right destination to arranging
-                    comfortable stays and exciting experiences, we make
-                    your travel planning simple.
-                </p>
-
-                <a href="#" class="btn btn-primary">
-                    Learn More
-                    <i class="bi bi-arrow-right ms-2"></i>
-                </a>
-
+                <p class="section-label">ABOUT US</p>
+                <h2>We Turn Travel Dreams Into Memories</h2>
+                <p>Wanderly is a modern travel agency focused on creating memorable journeys for individuals, couples, families and groups.</p>
+                <p>From choosing the right destination to arranging comfortable stays and exciting experiences, we make your travel planning simple.</p>
+                <a href="#" class="btn btn-primary">Learn More <i class="bi bi-arrow-right ms-2"></i></a>
             </div>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= CTA ================= -->
-
+<!-- CTA -->
 <section class="cta-section">
-
     <div class="container text-center">
-
-        <p class="section-label">
-            START YOUR JOURNEY
-        </p>
-
-        <h2>
-            Where Will You Go Next?
-        </h2>
-
-        <p>
-            Let us help you plan your next unforgettable adventure.
-        </p>
-
-        <a href="#packages" class="btn btn-light btn-lg">
-            Explore Packages
-            <i class="bi bi-arrow-right ms-2"></i>
-        </a>
-
+        <p class="section-label">START YOUR JOURNEY</p>
+        <h2>Where Will You Go Next?</h2>
+        <p>Let us help you plan your next unforgettable adventure.</p>
+        <a href="#packages" class="btn btn-light btn-lg">Explore Packages <i class="bi bi-arrow-right ms-2"></i></a>
     </div>
-
 </section>
 
 {% endblock %}
-

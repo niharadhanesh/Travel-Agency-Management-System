@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Wanderly Travel Agency{% endblock %}
+
+{% block content %}
+
+<style>
+    .auth-section { min-height: 100vh; padding-top: 76px; display: flex; }
+    .auth-wrap { display: grid; grid-template-columns: 1.1fr 1fr; width: 100%; }
+
+    .auth-image {
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        padding: 56px;
+        color: #fff;
+        background: url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1400&q=80') center / cover no-repeat;
+    }
+    .auth-image::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(10, 15, 25, 0.85) 10%, rgba(10, 15, 25, 0.1) 70%);
+    }
+    .auth-image-text { position: relative; max-width: 440px; }
+    .auth-image-text h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 800; margin-bottom: 0.8rem; }
+    .auth-image-text p { color: rgba(255, 255, 255, 0.82); margin: 0; }
+
+    .auth-form-side { display: flex; align-items: center; justify-content: center; padding: 56px 24px; background: var(--bg-soft); }
+    .auth-card { width: 100%; max-width: 420px; }
+    .auth-card h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.4rem; }
+    .auth-card .auth-sub { color: var(--muted); margin-bottom: 2rem; }
+
+    .auth-card label { font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+    .input-box { position: relative; margin-bottom: 1.2rem; }
+    .input-box > i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+    .input-box .form-control {
+        height: 50px;
+        padding: 0 44px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        box-shadow: none;
+        background: #fff;
+    }
+    .input-box .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15); }
+    .toggle-pass {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: 0;
+        background: none;
+        padding: 8px 10px;
+        color: var(--muted);
+    }
+
+    .auth-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .auth-row .form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
+    .auth-row a, .auth-switch a { color: var(--accent); font-weight: 600; }
+    .auth-card .btn-primary { width: 100%; height: 50px; }
+    .auth-switch { text-align: center; color: var(--muted); font-size: 0.92rem; margin-top: 1.5rem; }
+    .auth-error { background: #fef2f2; color: #b91c1c; border-radius: 10px; padding: 10px 14px; font-size: 0.9rem; margin-bottom: 1.2rem; }
+
+    @media (max-width: 991px) {
+        .auth-wrap { grid-template-columns: 1fr; }
+        .auth-image { display: none; }
+        .auth-form-side { background: #fff; }
+    }
+</style>
+
+<section class="auth-section">
+    <div class="auth-wrap">
+
+        <div class="auth-image">
+            <div class="auth-image-text">
+                <h2>Pick up where your next trip begins.</h2>
+                <p>Log in to manage your bookings, save destinations and plan your journeys in one place.</p>
+            </div>
+        </div>
+
+        <div class="auth-form-side">
+            <div class="auth-card">
+                <h1>Welcome back</h1>
+                <p class="auth-sub">Log in to your Wanderly account.</p>
+
+                {% if error %}<div class="auth-error">{{ error }}</div>{% endif %}
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+
+                    <label for="username">Username</label>
+                    <div class="input-box">
+                        <i class="bi bi-person"></i>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required autofocus>
+                    </div>
+
+                    <label for="password">Password</label>
+                    <div class="input-box">
+                        <i class="bi bi-lock"></i>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                        <button type="button" class="toggle-pass" id="togglePass" aria-label="Show password">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+
+                    <div class="auth-row">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                            <label class="form-check-label fw-normal" for="remember">Remember me</label>
+                        </div>
+                        <a href="#">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Log in</button>
+                </form>
+
+                <p class="auth-switch">Don't have an account? <a href="#">Sign up</a></p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    document.getElementById('togglePass').addEventListener('click', function () {
+        var input = document.getElementById('password');
+        var icon = this.querySelector('i');
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        icon.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+    });
+</script>
+
+{% endblock %}

@@ -1,219 +1,355 @@
-
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>{% block title %}Wanderly - Travel Agency{% endblock %}</title>
 
-    <!-- Bootstrap CSS -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- Bootstrap Icons -->
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    >
+    <style>
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-    {% block extra_css %}{% endblock %}
+    :root {
+        --ink: #111827;
+        --muted: #6b7280;
+        --line: #e5e7eb;
+        --bg: #ffffff;
+        --bg-soft: #f6f7f5;
+        --accent: #0f766e;
+        --accent-dark: #0b5c56;
+        --radius: 14px;
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+    body {
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, h5 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+    a { text-decoration: none; }
+    img { max-width: 100%; }
+
+    /* Buttons */
+    .btn {
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 0.6rem 1.3rem;
+        transition: background-color .2s, border-color .2s, color .2s;
+    }
+    .btn-lg { padding: 0.85rem 1.8rem; font-size: 1rem; }
+    .btn-primary {
+        --bs-btn-bg: var(--accent);
+        --bs-btn-border-color: var(--accent);
+        --bs-btn-hover-bg: var(--accent-dark);
+        --bs-btn-hover-border-color: var(--accent-dark);
+        --bs-btn-active-bg: var(--accent-dark);
+        --bs-btn-active-border-color: var(--accent-dark);
+        --bs-btn-focus-shadow-rgb: 15, 118, 110;
+    }
+    .btn-light { --bs-btn-color: var(--ink); }
+
+    /* Navbar */
+    .navbar {
+        background: rgba(17, 24, 39, 0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 0.9rem 0;
+    }
+    .navbar-brand { font-size: 1.15rem; letter-spacing: 0.08em; }
+    .navbar-brand i { color: #5eead4; margin-right: 4px; }
+    .navbar .nav-link {
+        color: rgba(255, 255, 255, 0.78);
+        font-weight: 500;
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+    }
+    .navbar .nav-link:hover { color: #fff; }
+
+    /* Footer */
+    footer {
+        background: var(--ink);
+        color: rgba(255, 255, 255, 0.65);
+        padding: 80px 0 30px;
+    }
+    footer h3, footer h5 { color: #fff; }
+    footer h3 { font-size: 1.3rem; letter-spacing: 0.08em; margin-bottom: 1rem; }
+    footer h5 { font-size: 1rem; margin-bottom: 1.1rem; }
+    footer a {
+        display: block;
+        color: rgba(255, 255, 255, 0.65);
+        margin-bottom: 0.55rem;
+        transition: color .2s;
+    }
+    footer a:hover { color: #fff; }
+    footer p i { color: #5eead4; margin-right: 8px; }
+    footer hr { border-color: rgba(255, 255, 255, 0.12); margin: 3rem 0 1.5rem; opacity: 1; }
+
+    .social-icons { display: flex; gap: 10px; margin-top: 1.2rem; }
+    .social-icons a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        margin: 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        color: #fff;
+    }
+    .social-icons a:hover { background: var(--accent); border-color: var(--accent); }
+
+    .footer-bottom {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 0.9rem;
+    }
+    .footer-bottom p { margin: 0; }
+    .footer-bottom div { display: flex; gap: 20px; }
+    .footer-bottom a { display: inline; margin: 0; }
+
+    /* Keyboard focus */
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+        outline: 2px solid #5eead4;
+        outline-offset: 2px;
+    }
+
+    @media (max-width: 991px) {
+        .navbar-collapse { padding: 1rem 0; }
+        .footer-bottom { flex-direction: column; }
+    }
+
+/* Hero */
+    .hero {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        color: #fff;
+        background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=80') center / cover no-repeat;
+    }
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(10, 15, 25, 0.85) 0%, rgba(10, 15, 25, 0.35) 70%);
+    }
+    .hero-content { position: relative; z-index: 2; padding-top: 90px; padding-bottom: 120px; }
+    .hero-small { font-weight: 600; color: #5eead4; margin-bottom: 1rem; }
+    .hero h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); font-weight: 800; margin-bottom: 1.2rem; }
+    .hero h1 span { color: #5eead4; }
+    .hero-text { max-width: 520px; font-size: 1.1rem; color: rgba(255, 255, 255, 0.82); margin-bottom: 2rem; }
+    .hero-buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+    .hero-buttons .btn { margin: 0 !important; }
+
+    /* Search */
+    .search-section { position: relative; z-index: 5; margin-top: -70px; }
+    .search-box {
+        background: #fff;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 20px 50px rgba(17, 24, 39, 0.12);
+    }
+    .search-box label { font-size: 0.85rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+    .search-box label i { color: var(--accent); margin-right: 4px; }
+    .search-box .form-control, .search-box .form-select {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.7rem 0.9rem;
+        box-shadow: none;
+    }
+    .search-box .form-control:focus, .search-box .form-select:focus { border-color: var(--accent); }
+    .search-box .btn { padding: 0.8rem; }
+
+    /* Sections */
+    .section-padding { padding: 100px 0; }
+    .section-heading { max-width: 600px; margin: 0 auto 1rem; }
+    .section-heading h2, .about-section h2, .cta-section h2 {
+        font-size: clamp(1.9rem, 4vw, 2.6rem);
+        font-weight: 800;
+        margin-bottom: 0.8rem;
+    }
+    .section-heading p:last-child { color: var(--muted); }
+    .section-label { color: var(--accent); font-weight: 700; font-size: 0.85rem; margin-bottom: 0.6rem; }
+
+    /* Destinations */
+    .destination-card {
+        position: relative;
+        height: 420px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        color: #fff;
+    }
+    .destination-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform .5s;
+    }
+    .destination-card:hover img { transform: scale(1.05); }
+    .destination-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(10, 15, 25, 0.85) 5%, rgba(10, 15, 25, 0) 60%);
+    }
+    .destination-content { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 26px; }
+    .destination-content span { font-size: 0.85rem; color: #5eead4; font-weight: 600; }
+    .destination-content h3 { font-size: 1.6rem; margin: 2px 0 6px; }
+    .destination-content p { font-size: 0.92rem; color: rgba(255, 255, 255, 0.8); margin-bottom: 0.6rem; }
+    .destination-content a { color: #fff; font-weight: 600; font-size: 0.92rem; }
+    .destination-content a:hover { color: #5eead4; }
+
+    /* Packages */
+    .packages-section { background: var(--bg-soft); }
+    .package-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: hidden;
+        height: 100%;
+        transition: box-shadow .25s;
+    }
+    .package-card:hover { box-shadow: 0 16px 40px rgba(17, 24, 39, 0.1); }
+    .package-image { position: relative; height: 230px; }
+    .package-image img { width: 100%; height: 100%; object-fit: cover; }
+    .package-badge {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        background: #fff;
+        color: var(--ink);
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 999px;
+    }
+    .package-body { padding: 24px; }
+    .package-body .location, .package-body .rating { font-size: 0.88rem; color: var(--muted); }
+    .package-body .location i { color: var(--accent); }
+    .package-body .rating { color: var(--ink); font-weight: 600; }
+    .package-body h3 { font-size: 1.35rem; margin: 10px 0 8px; }
+    .package-body > p { color: var(--muted); font-size: 0.95rem; }
+    .package-info { display: flex; gap: 20px; font-size: 0.88rem; color: var(--muted); }
+    .package-info i { color: var(--accent); margin-right: 4px; }
+    .package-body hr { border-color: var(--line); opacity: 1; margin: 1.2rem 0; }
+    .package-bottom { display: flex; justify-content: space-between; align-items: center; }
+    .package-bottom small { display: block; color: var(--muted); font-size: 0.8rem; line-height: 1.2; }
+    .package-bottom strong { font-size: 1.4rem; }
+
+    /* Why us */
+    .feature-card { height: 100%; padding: 8px 4px; }
+    .feature-icon {
+        width: 54px;
+        height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: #e6f4f1;
+        color: var(--accent);
+        font-size: 1.5rem;
+        margin-bottom: 1.1rem;
+    }
+    .feature-card h4 { font-size: 1.15rem; margin-bottom: 0.4rem; }
+    .feature-card p { color: var(--muted); font-size: 0.95rem; margin: 0; }
+
+    /* About */
+    .about-section { background: var(--bg-soft); }
+    .about-image { width: 100%; height: 460px; object-fit: cover; border-radius: var(--radius); }
+    .about-section p:not(.section-label) { color: var(--muted); }
+    .about-section .btn { margin-top: 0.8rem; }
+
+    /* CTA */
+    .cta-section { background: var(--accent); color: #fff; padding: 90px 0; }
+    .cta-section .section-label { color: #a7f3d0; }
+    .cta-section p:not(.section-label) { color: rgba(255, 255, 255, 0.85); max-width: 520px; margin: 0 auto 1.8rem; }
+
+    @media (max-width: 767px) {
+        .section-padding { padding: 70px 0; }
+        .hero-content { padding-bottom: 100px; }
+        .about-image { height: 320px; }
+    }
+
+    </style>
 </head>
-
 <body>
 
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
-
-            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
-                <i class="bi bi-airplane"></i>
-                WANDERLY
-            </a>
-
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-            >
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}"><i class="bi bi-airplane"></i> WANDERLY</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarNav">
-
                 <ul class="navbar-nav ms-auto align-items-lg-center">
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}">
-                            Home
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#destinations">
-                            Destinations
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#packages">
-                            Packages
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#about">
-                            About
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#contact">
-                            Contact
-                        </a>
-                    </li>
-
-                    <li class="nav-item ms-lg-3">
-                        <a href="#" class="btn btn-light px-4">
-                            Login
-                        </a>
-                    </li>
-
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#destinations">Destinations</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#packages">Packages</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#contact">Contact</a></li>
+                    <li class="nav-item ms-lg-3"><a href="{% url 'login' %}" class="btn btn-light px-4">Login</a></li>
                 </ul>
-
             </div>
         </div>
     </nav>
 
-
-    <!-- Main Content -->
     <main>
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
-
-    <!-- Footer -->
     <footer id="contact">
-
         <div class="container">
-
             <div class="row g-4">
-
                 <div class="col-lg-4">
-
-                    <h3>
-                        <i class="bi bi-airplane"></i>
-                        WANDERLY
-                    </h3>
-
-                    <p>
-                        Making your travel dreams a reality with carefully
-                        planned journeys and unforgettable experiences.
-                    </p>
-
+                    <h3><i class="bi bi-airplane"></i> WANDERLY</h3>
+                    <p>Making your travel dreams a reality with carefully planned journeys and unforgettable experiences.</p>
                     <div class="social-icons">
-
-                        <a href="#">
-                            <i class="bi bi-facebook"></i>
-                        </a>
-
-                        <a href="#">
-                            <i class="bi bi-instagram"></i>
-                        </a>
-
-                        <a href="#">
-                            <i class="bi bi-twitter-x"></i>
-                        </a>
-
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                        <a href="#"><i class="bi bi-twitter-x"></i></a>
                     </div>
-
                 </div>
-
-
                 <div class="col-lg-2 col-md-4">
-
                     <h5>Company</h5>
-
                     <a href="#about">About Us</a>
                     <a href="#">Our Team</a>
                     <a href="#">Careers</a>
                     <a href="#contact">Contact</a>
-
                 </div>
-
-
                 <div class="col-lg-2 col-md-4">
-
                     <h5>Explore</h5>
-
                     <a href="#destinations">Destinations</a>
                     <a href="#packages">Packages</a>
                     <a href="#">Hotels</a>
                     <a href="#">Activities</a>
-
                 </div>
-
-
                 <div class="col-lg-4 col-md-4">
-
                     <h5>Contact</h5>
-
-                    <p>
-                        <i class="bi bi-geo-alt"></i>
-                        Kochi, Kerala, India
-                    </p>
-
-                    <p>
-                        <i class="bi bi-envelope"></i>
-                        hello@wanderly.com
-                    </p>
-
-                    <p>
-                        <i class="bi bi-telephone"></i>
-                        +91 98765 43210
-                    </p>
-
+                    <p><i class="bi bi-geo-alt"></i> Kochi, Kerala, India</p>
+                    <p><i class="bi bi-envelope"></i> hello@wanderly.com</p>
+                    <p><i class="bi bi-telephone"></i> +91 98765 43210</p>
                 </div>
-
             </div>
-
-
             <hr>
-
             <div class="footer-bottom">
-
-                <p>
-                    © 2026 Wanderly. All Rights Reserved.
-                </p>
-
+                <p>&copy; 2026 Wanderly. All Rights Reserved.</p>
                 <div>
                     <a href="#">Privacy Policy</a>
-                    <a href="#">Terms & Conditions</a>
+                    <a href="#">Terms &amp; Conditions</a>
                 </div>
-
             </div>
-
         </div>
-
     </footer>
 
-
-    <!-- Bootstrap JS -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-    </script>
-
-    {% block extra_js %}{% endblock %}
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
