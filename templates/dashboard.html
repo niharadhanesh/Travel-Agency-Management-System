@@ -1,0 +1,178 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Dashboard - Wanderly Admin{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+    .welcome h2 { font-size: 1.6rem; margin-bottom: 4px; }
+    .welcome p { color: var(--muted); margin: 0; }
+
+    .stat-card { display: flex; gap: 16px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; height: 100%; }
+    .stat-icon { width: 52px; height: 52px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 14px; background: #e6f4f1; color: var(--accent); font-size: 1.4rem; }
+    .stat-card p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+    .stat-card h3 { margin: 2px 0; font-size: 1.6rem; font-weight: 800; }
+    .trend { font-size: 0.78rem; font-weight: 600; }
+    .trend.up { color: #15803d; }
+    .trend.down { color: #b91c1c; }
+
+    .chart { display: flex; align-items: flex-end; gap: 14px; height: 240px; padding-top: 10px; }
+    .bar-col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 8px; }
+    .bar { width: 100%; max-width: 46px; background: #99d8cf; border-radius: 8px 8px 0 0; transition: background .2s; }
+    .bar-col:last-child .bar, .bar:hover { background: var(--accent); }
+    .bar-col span { font-size: 0.8rem; color: var(--muted); }
+
+    .dest-row { margin-bottom: 20px; font-size: 0.92rem; }
+    .dest-row:last-child { margin-bottom: 0; }
+    .progress-line { height: 8px; background: #eef0ee; border-radius: 999px; margin-top: 8px; overflow: hidden; }
+    .progress-line div { height: 100%; background: var(--accent); border-radius: 999px; }
+
+    .table { margin: 0; font-size: 0.9rem; }
+    .table th { color: var(--muted); font-weight: 600; font-size: 0.8rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    .table td { padding: 14px 8px; vertical-align: middle; border-color: var(--line); white-space: nowrap; }
+</style>
+
+<div class="welcome mb-4">
+    <h2>Welcome back, {{ request.user.username|default:"Admin" }}</h2>
+    <p>Here's what's happening with Wanderly today.</p>
+</div>
+
+<div class="row g-4 mb-4">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-calendar-check"></i></div>
+                <div>
+                    <p>Total Bookings</p>
+                    <h3>1,284</h3>
+                    <span class="trend up"><i class="bi bi-arrow-up-right"></i> +12.5% this month</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-currency-rupee"></i></div>
+                <div>
+                    <p>Revenue</p>
+                    <h3>₹18.4L</h3>
+                    <span class="trend up"><i class="bi bi-arrow-up-right"></i> +8.2% this month</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-people"></i></div>
+                <div>
+                    <p>Customers</p>
+                    <h3>862</h3>
+                    <span class="trend up"><i class="bi bi-arrow-up-right"></i> +5.1% this month</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-backpack"></i></div>
+                <div>
+                    <p>Active Packages</p>
+                    <h3>24</h3>
+                    <span class="trend down"><i class="bi bi-arrow-down-right"></i> -2 this month</span>
+                </div>
+            </div>
+        </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="panel">
+            <div class="panel-head"><h5>Bookings Overview</h5><a href="#">Last 6 months</a></div>
+            <div class="chart">
+                <div class="bar-col"><div class="bar" style="height:45%"></div><span>May</span></div><div class="bar-col"><div class="bar" style="height:60%"></div><span>Jun</span></div><div class="bar-col"><div class="bar" style="height:52%"></div><span>Jul</span></div><div class="bar-col"><div class="bar" style="height:78%"></div><span>Aug</span></div><div class="bar-col"><div class="bar" style="height:68%"></div><span>Sep</span></div><div class="bar-col"><div class="bar" style="height:92%"></div><span>Oct</span></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="panel">
+            <div class="panel-head"><h5>Top Destinations</h5><a href="#">View all</a></div>
+
+                <div class="dest-row">
+                    <div class="d-flex justify-content-between"><span class="fw-semibold">Bali</span><span class="text-muted">82%</span></div>
+                    <div class="progress-line"><div style="width:82%"></div></div>
+                </div>
+
+                <div class="dest-row">
+                    <div class="d-flex justify-content-between"><span class="fw-semibold">Kerala</span><span class="text-muted">74%</span></div>
+                    <div class="progress-line"><div style="width:74%"></div></div>
+                </div>
+
+                <div class="dest-row">
+                    <div class="d-flex justify-content-between"><span class="fw-semibold">Dubai</span><span class="text-muted">58%</span></div>
+                    <div class="progress-line"><div style="width:58%"></div></div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-head"><h5>Recent Bookings</h5><a href="#">View all</a></div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr><th>Booking</th><th>Customer</th><th>Package</th><th>Travel Date</th><th>Amount</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+
+                        <tr>
+                            <td class="fw-semibold">#WB1042</td>
+                            <td>Anjali Menon</td>
+                            <td>Kerala Explorer</td>
+                            <td>12 Oct 2026</td>
+                            <td class="fw-semibold">₹25,000</td>
+                            <td><span class="badge-status confirmed">Confirmed</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="fw-semibold">#WB1041</td>
+                            <td>Rahul Nair</td>
+                            <td>Dubai Adventure</td>
+                            <td>15 Oct 2026</td>
+                            <td class="fw-semibold">₹45,000</td>
+                            <td><span class="badge-status pending">Pending</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="fw-semibold">#WB1040</td>
+                            <td>Sneha Das</td>
+                            <td>Bali Escape</td>
+                            <td>22 Oct 2026</td>
+                            <td class="fw-semibold">₹55,000</td>
+                            <td><span class="badge-status confirmed">Confirmed</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="fw-semibold">#WB1039</td>
+                            <td>Arjun Kumar</td>
+                            <td>Kerala Explorer</td>
+                            <td>28 Oct 2026</td>
+                            <td class="fw-semibold">₹25,000</td>
+                            <td><span class="badge-status cancelled">Cancelled</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="fw-semibold">#WB1038</td>
+                            <td>Fathima Noor</td>
+                            <td>Dubai Adventure</td>
+                            <td>03 Nov 2026</td>
+                            <td class="fw-semibold">₹45,000</td>
+                            <td><span class="badge-status confirmed">Confirmed</span></td>
+                        </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -22,3 +22,15 @@ def login_view(request):
             return redirect('home')
         error = 'Invalid username or password.'
     return render(request, 'login.html', {'error': error})
+
+# views.py
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+
+@login_required(login_url='login')
+def dashboard(request):
+    return render(request, 'dashboard.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
