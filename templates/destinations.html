@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+
+{% block title %}Destinations - Wanderly Travel Agency{% endblock %}
+
+{% block content %}
+
+<style>
+    .page-hero {
+        padding: 150px 0 80px;
+        color: #fff;
+        text-align: center;
+        background: linear-gradient(rgba(10, 15, 25, 0.72), rgba(10, 15, 25, 0.72)),
+                    url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=80') center / cover no-repeat;
+    }
+    .page-hero h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; margin-bottom: 0.8rem; }
+    .page-hero p { max-width: 540px; margin: 0 auto; color: rgba(255, 255, 255, 0.82); }
+    .crumbs { font-size: 0.88rem; color: #5eead4; font-weight: 600; margin-bottom: 1rem; }
+    .crumbs a { color: #5eead4; }
+
+    .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 2.5rem; }
+    .chip {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 8px 20px;
+        border-radius: 999px;
+        transition: all .2s;
+    }
+    .chip:hover { border-color: var(--accent); color: var(--accent); }
+    .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .place-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; height: 100%; transition: box-shadow .25s; }
+    .place-card:hover { box-shadow: 0 16px 40px rgba(17, 24, 39, 0.1); }
+    .place-image { position: relative; height: 230px; background: linear-gradient(135deg, #0f766e, #111827); overflow: hidden; }
+    .place-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+    .place-card:hover .place-image img { transform: scale(1.05); }
+    .place-tag { position: absolute; top: 14px; left: 14px; background: #fff; font-size: 0.78rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; }
+    .place-body { padding: 24px; }
+    .place-country { font-size: 0.85rem; color: var(--muted); }
+    .place-country i { color: var(--accent); }
+    .place-body h3 { font-size: 1.35rem; margin: 6px 0 8px; }
+    .place-body > p { color: var(--muted); font-size: 0.95rem; min-height: 52px; }
+    .place-meta { display: flex; gap: 20px; font-size: 0.88rem; color: var(--muted); padding: 14px 0; border-top: 1px solid var(--line); margin-top: 6px; }
+    .place-meta i { color: var(--accent); margin-right: 4px; }
+    .place-bottom { display: flex; justify-content: space-between; align-items: center; }
+    .place-bottom small { display: block; color: var(--muted); font-size: 0.8rem; line-height: 1.2; }
+    .place-bottom strong { font-size: 1.35rem; }
+</style>
+
+<section class="page-hero">
+    <div class="container">
+        <p class="crumbs"><a href="{% url 'home' %}">Home</a> / Destinations</p>
+        <h1>All Destinations</h1>
+        <p>Explore our full collection of handpicked places, from quiet hill stations to island escapes.</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+
+        <div class="chips"><button type="button" class="chip active" data-filter="All">All</button><button type="button" class="chip" data-filter="India">India</button><button type="button" class="chip" data-filter="Asia">Asia</button><button type="button" class="chip" data-filter="Middle East">Middle East</button><button type="button" class="chip" data-filter="Islands">Islands</button><button type="button" class="chip" data-filter="Europe">Europe</button></div>
+
+        <div class="row g-4" id="placeGrid">
+
+            <div class="col-lg-4 col-md-6 place-item" data-region="India">
+                <div class="place-card">
+                    <div class="place-image">
+                        <img src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=900&q=80" alt="Kerala" loading="lazy" onerror="this.style.display='none'">
+                        <span class="place-tag">India</span>
+                    </div>
+                    <div class="place-body">
+                        <span class="place-country"><i class="bi bi-geo-alt"></i> India</span>
+                        <h3>Kerala</h3>
+                        <p>Backwaters, tea hills and palm-fringed beaches in God's Own Country.</p>
+                        <div class="place-meta">
+                            <span><i class="bi bi-sun"></i> Sep - Mar</span>
+                            <span><i class="bi bi-clock"></i> 5 Days</span>
+                        </div>
+                        <div class="place-bottom">
+                            <div><small>Starting from</small><strong>&#8377;25,000</strong></div>
+                            <a href="#" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 place-item" data-region="India">
+                <div class="place-card">
+                    <div class="place-image">
+                        <img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=900&q=80" alt="Goa" loading="lazy" onerror="this.style.display='none'">
+                        <span class="place-tag">India</span>
+                    </div>
+                    <div class="place-body">
+                        <span class="place-country"><i class="bi bi-geo-alt"></i> India</span>
+                        <h3>Goa</h3>
+                        <p>Golden beaches, Portuguese heritage and a lively nightlife scene.</p>
+                        <div class="place-meta">
+                            <span><i class="bi bi-sun"></i> Nov - Feb</span>
+                            <span><i class="bi bi-clock"></i> 4 Days</span>
+                        </div>
+                        <div class="place-bottom">
+                            <div><small>Starting from</small><strong>&#8377;18,000</strong></div>
+                            <a href="#" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 place-item" data-region="India">
+                <div class="place-card">
+                    <div class="place-image">
+                        <img src="https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=900&q=80" alt="Manali" loading="lazy" onerror="this.style.display='none'">
+                        <span class="place-tag">India</span>
+                    </div>
+                    <div class="place-body">
+                        <span class="place-country"><i class="bi bi-geo-alt"></i> India</span>
+                        <h3>Manali</h3>
+                        <p>Snow-capped peaks, pine valleys and adventure sports in the Himalayas.</p>
+                        <div class="place-meta">
+                            <span><i class="bi bi-sun"></i> Mar - Jun</span>
+                            <span><i class="bi bi-clock"></i> 6 Days</span>
+                        </div>
+                        <div class="place-bottom">
+                            <div><small>Starting from</small><strong>&#8377;22,000</strong></div>
+                            <a href="#" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 place-item" data-region="Middle East">
+                <div class="place-card">
+                    <div class="place-image">
+                        <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=900&q=80" alt="Dubai" loading="lazy" onerror="this.style.display='none'">
+                        <span class="place-tag">Middle East</span>
+                    </div>
+                    <div class="place-body">
+                        <span class="place-country"><i class="bi bi-geo-alt"></i> UAE</span>
+                        <h3>Dubai</h3>
+                        <p>Skyscrapers, desert safaris and world-class shopping.</p>
+                        <div class="place-meta">
+                            <span><i class="bi bi-sun"></i> Nov - Mar</span>
+                            <span><i class="bi bi-clock"></i> 4 Days</span>
+                        </div>
+                        <div class="place-bottom">
+                            <div><small>Starting from</small><strong>&#8377;45,000</strong></div>
+                            <a href="#" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 place-item" data-region="Asia">
+                <div class="place-card">
+                    <div class="place-image">
+                        <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80" alt="Bali" loading="lazy" onerror="this.style.display='none'">
+                        <span class="place-tag">Asia</span>
+                    </div>
+                    <div class="place-body">
+                        <span class="place-country"><i class="bi bi-geo-alt"></i> Indonesia</span>
+                        <h3>Bali</h3>
+                        <p>Temples, rice terraces, waterfalls and tropical beaches.</p>
+                        <div class="place-meta">
+                            <span><i class="bi bi-sun"></i> Apr - Oct</span>
+                            <span><i class="bi bi-clock"></i> 6 Days</span>
+                        </div>
+                        <div class="place-bottom">
+                            <div><small>Starting from</small><strong>&#8377;55,000</strong></div>
+                            <a href="#" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 place-item" data-region="Asia">
+                <div class="place-card">
+                    <div class="place-image">
+                        <img src="https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=900&q=80" alt="Phuket" loading="lazy" onerror="this.style.display='none'">
+                        <span class="place-tag">Asia</span>
+                    </div>
+                    <div class="place-body">
+                        <span class="place-country"><i class="bi bi-geo-alt"></i> Thailand</span>
+                        <h3>Phuket</h3>
+                        <p>Island hopping, turquoise water and vibrant street food.</p>
+                        <div class="place-meta">
+                            <span><i class="bi bi-sun"></i> Nov - Apr</span>
+                            <span><i class="bi bi-clock"></i> 5 Days</span>
+                        </div>
+                        <div class="place-bottom">
+                            <div><small>Starting from</small><strong>&#8377;48,000</strong></div>
+                            <a href="#" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 place-item" data-region="Asia">
+                <div class="place-card">
+                    <div class="place-image">
+                        <img src="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=900&q=80" alt="Singapore" loading="lazy" onerror="this.style.display='none'">
+                        <span class="place-tag">Asia</span>
+                    </div>
+                    <div class="place-body">
+                        <span class="place-country"><i class="bi bi-geo-alt"></i> Singapore</span>
+                        <h3>Singapore</h3>
+                        <p>A futuristic city of gardens, food courts and skyline views.</p>
+                        <div class="place-meta">
+                            <span><i class="bi bi-sun"></i> Feb - Apr</span>
+                            <span><i class="bi bi-clock"></i> 4 Days</span>
+                        </div>
+                        <div class="place-bottom">
+                            <div><small>Starting from</small><strong>&#8377;60,000</strong></div>
+                            <a href="#" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 place-item" data-region="Islands">
+                <div class="place-card">
+                    <div class="place-image">
+                        <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=900&q=80" alt="Maldives" loading="lazy" onerror="this.style.display='none'">
+                        <span class="place-tag">Islands</span>
+                    </div>
+                    <div class="place-body">
+                        <span class="place-country"><i class="bi bi-geo-alt"></i> Maldives</span>
+                        <h3>Maldives</h3>
+                        <p>Overwater villas, coral reefs and crystal-clear lagoons.</p>
+                        <div class="place-meta">
+                            <span><i class="bi bi-sun"></i> Nov - Apr</span>
+                            <span><i class="bi bi-clock"></i> 5 Days</span>
+                        </div>
+                        <div class="place-bottom">
+                            <div><small>Starting from</small><strong>&#8377;85,000</strong></div>
+                            <a href="#" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 place-item" data-region="Europe">
+                <div class="place-card">
+                    <div class="place-image">
+                        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=900&q=80" alt="Paris" loading="lazy" onerror="this.style.display='none'">
+                        <span class="place-tag">Europe</span>
+                    </div>
+                    <div class="place-body">
+                        <span class="place-country"><i class="bi bi-geo-alt"></i> France</span>
+                        <h3>Paris</h3>
+                        <p>Art, cafes and the Eiffel Tower in the city of light.</p>
+                        <div class="place-meta">
+                            <span><i class="bi bi-sun"></i> Apr - Jun</span>
+                            <span><i class="bi bi-clock"></i> 7 Days</span>
+                        </div>
+                        <div class="place-bottom">
+                            <div><small>Starting from</small><strong>&#8377;1,20,000</strong></div>
+                            <a href="#" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container text-center">
+        <p class="section-label">CAN'T DECIDE?</p>
+        <h2>Let Us Plan It For You</h2>
+        <p>Tell us what you love and we'll build the perfect trip.</p>
+        <a href="{% url 'home' %}#packages" class="btn btn-light btn-lg">View Packages <i class="bi bi-arrow-right ms-2"></i></a>
+    </div>
+</section>
+
+<script>
+    var chips = document.querySelectorAll('.chip');
+    var items = document.querySelectorAll('.place-item');
+    chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+            chips.forEach(function (c) { c.classList.remove('active'); });
+            chip.classList.add('active');
+            var f = chip.dataset.filter;
+            items.forEach(function (item) {
+                item.style.display = (f === 'All' || item.dataset.region === f) ? '' : 'none';
+            });
+        });
+    });
+</script>
+
+{% endblock %}
