@@ -56,3 +56,26 @@ def admin_dashboard(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+
+def signup(request):
+    error = None
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password')
+        confirm = request.POST.get('confirm')
+
+        if password != confirm:
+            error = 'Passwords do not match.'
+        elif User.objects.filter(username=username).exists():
+            error = 'That username is already taken.'
+        elif User.objects.filter(email=email).exists():
+            error = 'An account with that email already exists.'
+        else:
+            user = User.objects.create_user(username=username, email=email, password=password)
+            login(request, user)
+            return redirect('home')
+    return render(request, 'signup.html', {'error': error})
