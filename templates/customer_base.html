@@ -154,7 +154,7 @@
         <p class="side-label">MENU</p>
         <a href="{% url 'customer_dashboard' %}" class="side-link {% if request.resolver_match.url_name == 'customer_dashboard' %}active{% endif %}"><i class="bi bi-grid"></i> Dashboard</a>
         <a href="#" class="side-link"><i class="bi bi-calendar-check"></i> My Bookings</a>
-        <a href="{% url 'destinations' %}" class="side-link"><i class="bi bi-geo-alt"></i> Destinations</a>
+        <a href="{% url 'customer_destinations' %}" class="side-link {% if request.resolver_match.url_name == 'customer_destinations' %}active{% endif %}"><i class="bi bi-geo-alt"></i> Destinations</a>
         <a href="{% url 'home' %}#packages" class="side-link"><i class="bi bi-backpack"></i> Packages</a>
         <a href="#" class="side-link"><i class="bi bi-heart"></i> Saved Places</a>
 

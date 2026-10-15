@@ -48,7 +48,7 @@
 <div class="c-hero">
     <h2>Welcome back, {{ request.user.username }}</h2>
     <p>Ready for your next trip? Explore new places or check on your upcoming bookings.</p>
-    <a href="{% url 'destinations' %}" class="btn btn-light btn-lg">Explore Destinations <i class="bi bi-arrow-right ms-2"></i></a>
+    <a href="{% url 'customer_destinations' %}" class="btn btn-light btn-lg">Explore Destinations <i class="bi bi-arrow-right ms-2"></i></a>
 </div>
 
 <div class="row g-4 mb-4">
@@ -124,25 +124,25 @@
     </div>
 </div>
 
-<div class="panel-head"><h5 class="m-0">Recommended for you</h5><a href="{% url 'destinations' %}">See all</a></div>
+<div class="panel-head"><h5 class="m-0">Recommended for you</h5><a href="{% url 'customer_destinations' %}">See all</a></div>
 <div class="row g-3">
 
             <div class="col-md-4">
-                <a href="{% url 'destinations' %}" class="sugg">
+                <a href="{% url 'customer_destinations' %}" class="sugg">
                     <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=600&q=80" alt="Maldives" onerror="this.style.display='none'">
                     <div><strong>Maldives</strong><span>Maldives &middot; from &#8377;85,000</span></div>
                 </a>
             </div>
 
             <div class="col-md-4">
-                <a href="{% url 'destinations' %}" class="sugg">
+                <a href="{% url 'customer_destinations' %}" class="sugg">
                     <img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&q=80" alt="Goa" onerror="this.style.display='none'">
                     <div><strong>Goa</strong><span>India &middot; from &#8377;18,000</span></div>
                 </a>
             </div>
 
             <div class="col-md-4">
-                <a href="{% url 'destinations' %}" class="sugg">
+                <a href="{% url 'customer_destinations' %}" class="sugg">
                     <img src="https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=600&q=80" alt="Phuket" onerror="this.style.display='none'">
                     <div><strong>Phuket</strong><span>Thailand &middot; from &#8377;48,000</span></div>
                 </a>

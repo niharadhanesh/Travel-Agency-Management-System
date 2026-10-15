@@ -1,0 +1,775 @@
+{% extends 'customer_base.html' %}
+
+{% block title %}Destinations - Wanderly{% endblock %}
+
+{% block page_title %}Destinations{% endblock %}
+
+{% block content %}
+
+<style>
+    .toolbar { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip { border: 1px solid var(--line); background: #fff; color: var(--ink); font-weight: 600; font-size: 0.88rem; padding: 7px 18px; border-radius: 999px; transition: all .2s; }
+    .chip:hover { border-color: var(--accent); color: var(--accent); }
+    .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .search-inline { position: relative; width: 280px; max-width: 100%; }
+    .search-inline i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+    .search-inline input { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px 9px 36px; font-size: 0.9rem; background: #fff; }
+    .search-inline input:focus { outline: none; border-color: var(--accent); }
+    .count { color: var(--muted); font-size: 0.88rem; margin-bottom: 14px; }
+    .empty { display: none; text-align: center; padding: 60px 0; color: var(--muted); }
+
+    .dcard { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; height: 100%; transition: box-shadow .25s; }
+    .dcard:hover { box-shadow: 0 16px 40px rgba(17, 24, 39, 0.1); }
+    .dcard-img { position: relative; height: 210px; background: linear-gradient(135deg, #0f766e, #111827); overflow: hidden; }
+    .dcard-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+    .dcard:hover .dcard-img img { transform: scale(1.05); }
+    .dcard-region { position: absolute; top: 14px; left: 14px; background: #fff; font-size: 0.76rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; }
+    .dcard-rating { position: absolute; top: 14px; right: 14px; background: rgba(17, 24, 39, 0.75); color: #fff; font-size: 0.8rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+    .dcard-rating i { color: #fbbf24; }
+    .dcard-body { padding: 22px; }
+    .dcard-country { font-size: 0.85rem; color: var(--muted); }
+    .dcard-country i { color: var(--accent); }
+    .dcard-body h3 { font-size: 1.3rem; margin: 4px 0 6px; }
+    .dcard-body > p { color: var(--muted); font-size: 0.92rem; margin-bottom: 10px; }
+    .mini-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .mini-tag { background: #e6f4f1; color: var(--accent-dark); font-size: 0.74rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+    .dcard-meta { display: flex; gap: 18px; font-size: 0.86rem; color: var(--muted); padding: 14px 0; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+    .dcard-meta i { color: var(--accent); margin-right: 4px; }
+    .dcard-bottom { display: flex; justify-content: space-between; align-items: center; }
+    .dcard-bottom small { display: block; color: var(--muted); font-size: 0.78rem; line-height: 1.2; }
+    .dcard-bottom strong { font-size: 1.3rem; }
+
+    /* Detail modal */
+    .modal-content { border: 0; border-radius: 18px; overflow: hidden; }
+    .dm-hero { position: relative; color: #fff; padding: 90px 32px 28px; background-size: cover; background-position: center; background-color: #111827; }
+    .dm-hero h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; margin: 4px 0 6px; }
+    .dm-hero p { margin: 0; color: rgba(255, 255, 255, 0.85); }
+    .dm-hero p i { color: #fbbf24; }
+    .dm-hero .btn-close { position: absolute; top: 18px; right: 18px; }
+    .modal-body { padding: 28px 32px 32px; }
+    .modal-body h5 { font-size: 1.1rem; margin-bottom: 10px; }
+
+    .checks { list-style: none; padding: 0; margin: 0; }
+    .checks.two-col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px; }
+    .checks li { font-size: 0.93rem; }
+    .checks i { color: var(--accent); margin-right: 8px; }
+
+    .steps { border-left: 2px solid #cfe8e4; margin-left: 6px; padding-left: 20px; }
+    .step { position: relative; margin-bottom: 14px; }
+    .step::before { content: ""; position: absolute; left: -27px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid #fff; }
+    .step-day { font-weight: 700; font-size: 0.85rem; color: var(--accent); }
+    .step p { margin: 2px 0 0; font-size: 0.93rem; }
+
+    .book-box { background: var(--bg-soft); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; margin-bottom: 18px; text-align: center; }
+    .book-box small { display: block; color: var(--muted); }
+    .book-box strong { font-size: 2rem; font-weight: 800; }
+    .book-box span { display: block; color: var(--muted); font-size: 0.85rem; }
+    .facts { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+    .facts h6 { font-weight: 700; margin-bottom: 8px; }
+    .fact { display: flex; justify-content: space-between; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+    .fact:last-child { border-bottom: 0; padding-bottom: 0; }
+    .fact span { color: var(--muted); flex-shrink: 0; }
+    .fact b { text-align: right; font-weight: 600; }
+
+    @media (max-width: 575px) {
+        .checks.two-col { grid-template-columns: 1fr; }
+        .dm-hero, .modal-body { padding-left: 20px; padding-right: 20px; }
+    }
+</style>
+
+<div class="toolbar">
+    <div class="chips"><button type="button" class="chip active" data-filter="All">All</button><button type="button" class="chip" data-filter="India">India</button><button type="button" class="chip" data-filter="Asia">Asia</button><button type="button" class="chip" data-filter="Middle East">Middle East</button><button type="button" class="chip" data-filter="Islands">Islands</button><button type="button" class="chip" data-filter="Europe">Europe</button></div>
+    <div class="search-inline"><i class="bi bi-search"></i><input type="text" id="placeSearch" placeholder="Search destination or country"></div>
+</div>
+
+<p class="count" id="placeCount"></p>
+
+<div class="row g-4" id="placeGrid">
+
+        <div class="col-xl-4 col-md-6 place-item" data-region="India" data-name="kerala india">
+            <div class="dcard">
+                <div class="dcard-img">
+                    <img src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=80" alt="Kerala" loading="lazy" onerror="this.style.display='none'">
+                    <span class="dcard-region">India</span>
+                    <span class="dcard-rating"><i class="bi bi-star-fill"></i> 4.9</span>
+                </div>
+                <div class="dcard-body">
+                    <span class="dcard-country"><i class="bi bi-geo-alt"></i> India</span>
+                    <h3>Kerala</h3>
+                    <p>Backwaters, tea hills and palm-fringed beaches.</p>
+                    <div class="mini-tags"><span class="mini-tag">Couples</span><span class="mini-tag">Families</span><span class="mini-tag">Nature lovers</span></div>
+                    <div class="dcard-meta">
+                        <span><i class="bi bi-sun"></i> Sep - Mar</span>
+                        <span><i class="bi bi-clock"></i> 5 Days</span>
+                    </div>
+                    <div class="dcard-bottom">
+                        <div><small>Starting from</small><strong>&#8377;25,000</strong></div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#m-kerala">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 place-item" data-region="India" data-name="goa india">
+            <div class="dcard">
+                <div class="dcard-img">
+                    <img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80" alt="Goa" loading="lazy" onerror="this.style.display='none'">
+                    <span class="dcard-region">India</span>
+                    <span class="dcard-rating"><i class="bi bi-star-fill"></i> 4.7</span>
+                </div>
+                <div class="dcard-body">
+                    <span class="dcard-country"><i class="bi bi-geo-alt"></i> India</span>
+                    <h3>Goa</h3>
+                    <p>Golden beaches and Portuguese heritage.</p>
+                    <div class="mini-tags"><span class="mini-tag">Friends</span><span class="mini-tag">Couples</span><span class="mini-tag">Beach lovers</span></div>
+                    <div class="dcard-meta">
+                        <span><i class="bi bi-sun"></i> Nov - Feb</span>
+                        <span><i class="bi bi-clock"></i> 4 Days</span>
+                    </div>
+                    <div class="dcard-bottom">
+                        <div><small>Starting from</small><strong>&#8377;18,000</strong></div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#m-goa">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 place-item" data-region="India" data-name="manali india">
+            <div class="dcard">
+                <div class="dcard-img">
+                    <img src="https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80" alt="Manali" loading="lazy" onerror="this.style.display='none'">
+                    <span class="dcard-region">India</span>
+                    <span class="dcard-rating"><i class="bi bi-star-fill"></i> 4.8</span>
+                </div>
+                <div class="dcard-body">
+                    <span class="dcard-country"><i class="bi bi-geo-alt"></i> India</span>
+                    <h3>Manali</h3>
+                    <p>Snow peaks, pine valleys and adventure.</p>
+                    <div class="mini-tags"><span class="mini-tag">Adventure seekers</span><span class="mini-tag">Honeymooners</span><span class="mini-tag">Families</span></div>
+                    <div class="dcard-meta">
+                        <span><i class="bi bi-sun"></i> Mar - Jun</span>
+                        <span><i class="bi bi-clock"></i> 6 Days</span>
+                    </div>
+                    <div class="dcard-bottom">
+                        <div><small>Starting from</small><strong>&#8377;22,000</strong></div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#m-manali">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 place-item" data-region="Middle East" data-name="dubai uae">
+            <div class="dcard">
+                <div class="dcard-img">
+                    <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80" alt="Dubai" loading="lazy" onerror="this.style.display='none'">
+                    <span class="dcard-region">Middle East</span>
+                    <span class="dcard-rating"><i class="bi bi-star-fill"></i> 4.8</span>
+                </div>
+                <div class="dcard-body">
+                    <span class="dcard-country"><i class="bi bi-geo-alt"></i> UAE</span>
+                    <h3>Dubai</h3>
+                    <p>Skyscrapers, desert safaris and shopping.</p>
+                    <div class="mini-tags"><span class="mini-tag">Families</span><span class="mini-tag">Shoppers</span><span class="mini-tag">Couples</span></div>
+                    <div class="dcard-meta">
+                        <span><i class="bi bi-sun"></i> Nov - Mar</span>
+                        <span><i class="bi bi-clock"></i> 4 Days</span>
+                    </div>
+                    <div class="dcard-bottom">
+                        <div><small>Starting from</small><strong>&#8377;45,000</strong></div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#m-dubai">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 place-item" data-region="Asia" data-name="bali indonesia">
+            <div class="dcard">
+                <div class="dcard-img">
+                    <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80" alt="Bali" loading="lazy" onerror="this.style.display='none'">
+                    <span class="dcard-region">Asia</span>
+                    <span class="dcard-rating"><i class="bi bi-star-fill"></i> 4.9</span>
+                </div>
+                <div class="dcard-body">
+                    <span class="dcard-country"><i class="bi bi-geo-alt"></i> Indonesia</span>
+                    <h3>Bali</h3>
+                    <p>Temples, rice terraces and beaches.</p>
+                    <div class="mini-tags"><span class="mini-tag">Honeymooners</span><span class="mini-tag">Couples</span><span class="mini-tag">Wellness travellers</span></div>
+                    <div class="dcard-meta">
+                        <span><i class="bi bi-sun"></i> Apr - Oct</span>
+                        <span><i class="bi bi-clock"></i> 6 Days</span>
+                    </div>
+                    <div class="dcard-bottom">
+                        <div><small>Starting from</small><strong>&#8377;55,000</strong></div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#m-bali">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 place-item" data-region="Asia" data-name="phuket thailand">
+            <div class="dcard">
+                <div class="dcard-img">
+                    <img src="https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=1200&q=80" alt="Phuket" loading="lazy" onerror="this.style.display='none'">
+                    <span class="dcard-region">Asia</span>
+                    <span class="dcard-rating"><i class="bi bi-star-fill"></i> 4.6</span>
+                </div>
+                <div class="dcard-body">
+                    <span class="dcard-country"><i class="bi bi-geo-alt"></i> Thailand</span>
+                    <h3>Phuket</h3>
+                    <p>Island hopping and street food.</p>
+                    <div class="mini-tags"><span class="mini-tag">Friends</span><span class="mini-tag">Families</span><span class="mini-tag">Beach lovers</span></div>
+                    <div class="dcard-meta">
+                        <span><i class="bi bi-sun"></i> Nov - Apr</span>
+                        <span><i class="bi bi-clock"></i> 5 Days</span>
+                    </div>
+                    <div class="dcard-bottom">
+                        <div><small>Starting from</small><strong>&#8377;48,000</strong></div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#m-phuket">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 place-item" data-region="Asia" data-name="singapore singapore">
+            <div class="dcard">
+                <div class="dcard-img">
+                    <img src="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1200&q=80" alt="Singapore" loading="lazy" onerror="this.style.display='none'">
+                    <span class="dcard-region">Asia</span>
+                    <span class="dcard-rating"><i class="bi bi-star-fill"></i> 4.8</span>
+                </div>
+                <div class="dcard-body">
+                    <span class="dcard-country"><i class="bi bi-geo-alt"></i> Singapore</span>
+                    <h3>Singapore</h3>
+                    <p>Gardens, food courts and skyline views.</p>
+                    <div class="mini-tags"><span class="mini-tag">Families</span><span class="mini-tag">First-time travellers</span><span class="mini-tag">Foodies</span></div>
+                    <div class="dcard-meta">
+                        <span><i class="bi bi-sun"></i> Feb - Apr</span>
+                        <span><i class="bi bi-clock"></i> 4 Days</span>
+                    </div>
+                    <div class="dcard-bottom">
+                        <div><small>Starting from</small><strong>&#8377;60,000</strong></div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#m-singapore">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 place-item" data-region="Islands" data-name="maldives maldives">
+            <div class="dcard">
+                <div class="dcard-img">
+                    <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=1200&q=80" alt="Maldives" loading="lazy" onerror="this.style.display='none'">
+                    <span class="dcard-region">Islands</span>
+                    <span class="dcard-rating"><i class="bi bi-star-fill"></i> 4.9</span>
+                </div>
+                <div class="dcard-body">
+                    <span class="dcard-country"><i class="bi bi-geo-alt"></i> Maldives</span>
+                    <h3>Maldives</h3>
+                    <p>Overwater villas and coral reefs.</p>
+                    <div class="mini-tags"><span class="mini-tag">Honeymooners</span><span class="mini-tag">Couples</span><span class="mini-tag">Divers</span></div>
+                    <div class="dcard-meta">
+                        <span><i class="bi bi-sun"></i> Nov - Apr</span>
+                        <span><i class="bi bi-clock"></i> 5 Days</span>
+                    </div>
+                    <div class="dcard-bottom">
+                        <div><small>Starting from</small><strong>&#8377;85,000</strong></div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#m-maldives">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 place-item" data-region="Europe" data-name="paris france">
+            <div class="dcard">
+                <div class="dcard-img">
+                    <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80" alt="Paris" loading="lazy" onerror="this.style.display='none'">
+                    <span class="dcard-region">Europe</span>
+                    <span class="dcard-rating"><i class="bi bi-star-fill"></i> 4.8</span>
+                </div>
+                <div class="dcard-body">
+                    <span class="dcard-country"><i class="bi bi-geo-alt"></i> France</span>
+                    <h3>Paris</h3>
+                    <p>Art, cafes and the Eiffel Tower.</p>
+                    <div class="mini-tags"><span class="mini-tag">Couples</span><span class="mini-tag">Art lovers</span><span class="mini-tag">First-time Europe</span></div>
+                    <div class="dcard-meta">
+                        <span><i class="bi bi-sun"></i> Apr - Jun</span>
+                        <span><i class="bi bi-clock"></i> 7 Days</span>
+                    </div>
+                    <div class="dcard-bottom">
+                        <div><small>Starting from</small><strong>&#8377;1,20,000</strong></div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#m-paris">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<div class="empty" id="emptyState">
+    <i class="bi bi-compass" style="font-size: 2rem;"></i>
+    <p class="mt-2 mb-0">No destinations match your search. Try another name or choose All.</p>
+</div>
+
+
+<div class="modal fade" id="m-kerala" tabindex="-1" aria-labelledby="t-kerala" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="dm-hero" style="background-image: linear-gradient(to top, rgba(10,15,25,.85), rgba(10,15,25,.15)), url('https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=80');">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <span class="dcard-country text-white-50"><i class="bi bi-geo-alt"></i> India</span>
+                <h2 id="t-kerala">Kerala</h2>
+                <p><i class="bi bi-star-fill"></i> 4.9 &nbsp;(1,240 reviews) &nbsp;&middot;&nbsp; 5 Days / 4 Nights</p>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h5>About Kerala</h5>
+                        <p class="text-muted">Kerala runs from the Western Ghats down to a long Arabian Sea coastline. Slow houseboat days, misty tea plantations and fresh seafood make it an easy, relaxing trip.</p>
+
+                        <h5 class="mt-4">Highlights</h5>
+                        <ul class="checks two-col"><li><i class="bi bi-check-circle-fill"></i> Houseboat stay in Alleppey</li><li><i class="bi bi-check-circle-fill"></i> Tea gardens of Munnar</li><li><i class="bi bi-check-circle-fill"></i> Periyar wildlife sanctuary</li><li><i class="bi bi-check-circle-fill"></i> Kathakali and Ayurveda</li></ul>
+
+                        <h5 class="mt-4">Sample itinerary</h5>
+                        <div class="steps"><div class="step"><span class="step-day">Day 1</span><p>Arrive in Kochi, Fort Kochi walk and Chinese fishing nets</p></div><div class="step"><span class="step-day">Day 2</span><p>Drive to Munnar, tea plantation visit</p></div><div class="step"><span class="step-day">Day 3</span><p>Munnar sightseeing, then transfer to Thekkady</p></div><div class="step"><span class="step-day">Day 4</span><p>Periyar boat ride, then Alleppey houseboat</p></div><div class="step"><span class="step-day">Day 5</span><p>Backwater cruise and departure</p></div></div>
+
+                        <h5 class="mt-4">What's included</h5>
+                        <ul class="checks two-col small-check"><li><i class="bi bi-check2"></i> 4 nights stay</li><li><i class="bi bi-check2"></i> Daily breakfast</li><li><i class="bi bi-check2"></i> Houseboat night</li><li><i class="bi bi-check2"></i> Private car transfers</li><li><i class="bi bi-check2"></i> Sightseeing as per plan</li></ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="book-box">
+                            <small>Starting from</small>
+                            <strong>&#8377;25,000</strong>
+                            <span>per person</span>
+                            <a href="#" class="btn btn-primary w-100 mt-3">Book This Trip</a>
+                            <a href="#" class="btn btn-outline-dark w-100 mt-2"><i class="bi bi-heart"></i> Save for Later</a>
+                        </div>
+                        <div class="facts">
+                            <h6>Quick facts</h6>
+                            <div class="fact"><span>Best time</span><b>Sep - Mar</b></div>
+                            <div class="fact"><span>Duration</span><b>5 Days / 4 Nights</b></div>
+                            <div class="fact"><span>Climate</span><b>Warm and humid; heavy monsoon Jun - Aug</b></div>
+                            <div class="fact"><span>Language</span><b>Malayalam, English</b></div>
+                            <div class="fact"><span>Currency</span><b>Indian Rupee</b></div>
+                            <div class="fact"><span>Ideal for</span><b>Couples, Families, Nature lovers</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="m-goa" tabindex="-1" aria-labelledby="t-goa" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="dm-hero" style="background-image: linear-gradient(to top, rgba(10,15,25,.85), rgba(10,15,25,.15)), url('https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80');">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <span class="dcard-country text-white-50"><i class="bi bi-geo-alt"></i> India</span>
+                <h2 id="t-goa">Goa</h2>
+                <p><i class="bi bi-star-fill"></i> 4.7 &nbsp;(980 reviews) &nbsp;&middot;&nbsp; 4 Days / 3 Nights</p>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h5>About Goa</h5>
+                        <p class="text-muted">Goa pairs lively beaches and nightlife in the north with quiet sand and old churches in the south. Easy to explore by scooter or taxi.</p>
+
+                        <h5 class="mt-4">Highlights</h5>
+                        <ul class="checks two-col"><li><i class="bi bi-check-circle-fill"></i> North Goa beaches</li><li><i class="bi bi-check-circle-fill"></i> Old Goa churches</li><li><i class="bi bi-check-circle-fill"></i> Fort Aguada sunsets</li><li><i class="bi bi-check-circle-fill"></i> Spice plantation visit</li></ul>
+
+                        <h5 class="mt-4">Sample itinerary</h5>
+                        <div class="steps"><div class="step"><span class="step-day">Day 1</span><p>Arrive, Calangute and Baga beach evening</p></div><div class="step"><span class="step-day">Day 2</span><p>Fort Aguada, Anjuna flea market, sunset cruise</p></div><div class="step"><span class="step-day">Day 3</span><p>Old Goa churches and Fontainhas walk</p></div><div class="step"><span class="step-day">Day 4</span><p>South Goa beach morning and departure</p></div></div>
+
+                        <h5 class="mt-4">What's included</h5>
+                        <ul class="checks two-col small-check"><li><i class="bi bi-check2"></i> 3 nights stay</li><li><i class="bi bi-check2"></i> Daily breakfast</li><li><i class="bi bi-check2"></i> Airport transfers</li><li><i class="bi bi-check2"></i> Sunset river cruise</li></ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="book-box">
+                            <small>Starting from</small>
+                            <strong>&#8377;18,000</strong>
+                            <span>per person</span>
+                            <a href="#" class="btn btn-primary w-100 mt-3">Book This Trip</a>
+                            <a href="#" class="btn btn-outline-dark w-100 mt-2"><i class="bi bi-heart"></i> Save for Later</a>
+                        </div>
+                        <div class="facts">
+                            <h6>Quick facts</h6>
+                            <div class="fact"><span>Best time</span><b>Nov - Feb</b></div>
+                            <div class="fact"><span>Duration</span><b>4 Days / 3 Nights</b></div>
+                            <div class="fact"><span>Climate</span><b>Hot and dry in winter; monsoon Jun - Sep</b></div>
+                            <div class="fact"><span>Language</span><b>Konkani, English, Hindi</b></div>
+                            <div class="fact"><span>Currency</span><b>Indian Rupee</b></div>
+                            <div class="fact"><span>Ideal for</span><b>Friends, Couples, Beach lovers</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="m-manali" tabindex="-1" aria-labelledby="t-manali" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="dm-hero" style="background-image: linear-gradient(to top, rgba(10,15,25,.85), rgba(10,15,25,.15)), url('https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80');">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <span class="dcard-country text-white-50"><i class="bi bi-geo-alt"></i> India</span>
+                <h2 id="t-manali">Manali</h2>
+                <p><i class="bi bi-star-fill"></i> 4.8 &nbsp;(870 reviews) &nbsp;&middot;&nbsp; 6 Days / 5 Nights</p>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h5>About Manali</h5>
+                        <p class="text-muted">Manali sits in the Beas river valley of Himachal Pradesh, with snow passes close by and plenty of adventure activities in season.</p>
+
+                        <h5 class="mt-4">Highlights</h5>
+                        <ul class="checks two-col"><li><i class="bi bi-check-circle-fill"></i> Solang Valley activities</li><li><i class="bi bi-check-circle-fill"></i> Hadimba Temple</li><li><i class="bi bi-check-circle-fill"></i> Old Manali cafes</li><li><i class="bi bi-check-circle-fill"></i> Atal Tunnel and Sissu</li></ul>
+
+                        <h5 class="mt-4">Sample itinerary</h5>
+                        <div class="steps"><div class="step"><span class="step-day">Day 1</span><p>Arrive in Manali, rest and Mall Road walk</p></div><div class="step"><span class="step-day">Day 2</span><p>Hadimba Temple and Vashisht hot springs</p></div><div class="step"><span class="step-day">Day 3</span><p>Solang Valley, paragliding and ropeway</p></div><div class="step"><span class="step-day">Day 4</span><p>Atal Tunnel and Sissu day trip</p></div><div class="step"><span class="step-day">Day 5</span><p>Old Manali and local markets</p></div><div class="step"><span class="step-day">Day 6</span><p>Departure</p></div></div>
+
+                        <h5 class="mt-4">What's included</h5>
+                        <ul class="checks two-col small-check"><li><i class="bi bi-check2"></i> 5 nights stay</li><li><i class="bi bi-check2"></i> Daily breakfast and dinner</li><li><i class="bi bi-check2"></i> Private cab for sightseeing</li><li><i class="bi bi-check2"></i> Activity booking help</li></ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="book-box">
+                            <small>Starting from</small>
+                            <strong>&#8377;22,000</strong>
+                            <span>per person</span>
+                            <a href="#" class="btn btn-primary w-100 mt-3">Book This Trip</a>
+                            <a href="#" class="btn btn-outline-dark w-100 mt-2"><i class="bi bi-heart"></i> Save for Later</a>
+                        </div>
+                        <div class="facts">
+                            <h6>Quick facts</h6>
+                            <div class="fact"><span>Best time</span><b>Mar - Jun</b></div>
+                            <div class="fact"><span>Duration</span><b>6 Days / 5 Nights</b></div>
+                            <div class="fact"><span>Climate</span><b>Cool in summer; snow from Dec - Feb</b></div>
+                            <div class="fact"><span>Language</span><b>Hindi, English</b></div>
+                            <div class="fact"><span>Currency</span><b>Indian Rupee</b></div>
+                            <div class="fact"><span>Ideal for</span><b>Adventure seekers, Honeymooners, Families</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="m-dubai" tabindex="-1" aria-labelledby="t-dubai" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="dm-hero" style="background-image: linear-gradient(to top, rgba(10,15,25,.85), rgba(10,15,25,.15)), url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80');">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <span class="dcard-country text-white-50"><i class="bi bi-geo-alt"></i> UAE</span>
+                <h2 id="t-dubai">Dubai</h2>
+                <p><i class="bi bi-star-fill"></i> 4.8 &nbsp;(1,510 reviews) &nbsp;&middot;&nbsp; 4 Days / 3 Nights</p>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h5>About Dubai</h5>
+                        <p class="text-muted">Dubai is a modern city built around record-setting architecture, big malls and desert adventures just outside town.</p>
+
+                        <h5 class="mt-4">Highlights</h5>
+                        <ul class="checks two-col"><li><i class="bi bi-check-circle-fill"></i> Burj Khalifa observation deck</li><li><i class="bi bi-check-circle-fill"></i> Desert safari with dinner</li><li><i class="bi bi-check-circle-fill"></i> Dubai Marina cruise</li><li><i class="bi bi-check-circle-fill"></i> Gold and spice souks</li></ul>
+
+                        <h5 class="mt-4">Sample itinerary</h5>
+                        <div class="steps"><div class="step"><span class="step-day">Day 1</span><p>Arrive, Dubai Marina and evening dhow cruise</p></div><div class="step"><span class="step-day">Day 2</span><p>City tour, Burj Khalifa and Dubai Mall fountain show</p></div><div class="step"><span class="step-day">Day 3</span><p>Desert safari with BBQ dinner</p></div><div class="step"><span class="step-day">Day 4</span><p>Old Dubai souks and departure</p></div></div>
+
+                        <h5 class="mt-4">What's included</h5>
+                        <ul class="checks two-col small-check"><li><i class="bi bi-check2"></i> 3 nights stay</li><li><i class="bi bi-check2"></i> Daily breakfast</li><li><i class="bi bi-check2"></i> Desert safari</li><li><i class="bi bi-check2"></i> Burj Khalifa ticket</li><li><i class="bi bi-check2"></i> Airport transfers</li></ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="book-box">
+                            <small>Starting from</small>
+                            <strong>&#8377;45,000</strong>
+                            <span>per person</span>
+                            <a href="#" class="btn btn-primary w-100 mt-3">Book This Trip</a>
+                            <a href="#" class="btn btn-outline-dark w-100 mt-2"><i class="bi bi-heart"></i> Save for Later</a>
+                        </div>
+                        <div class="facts">
+                            <h6>Quick facts</h6>
+                            <div class="fact"><span>Best time</span><b>Nov - Mar</b></div>
+                            <div class="fact"><span>Duration</span><b>4 Days / 3 Nights</b></div>
+                            <div class="fact"><span>Climate</span><b>Very hot in summer; pleasant Nov - Mar</b></div>
+                            <div class="fact"><span>Language</span><b>Arabic, English</b></div>
+                            <div class="fact"><span>Currency</span><b>UAE Dirham</b></div>
+                            <div class="fact"><span>Ideal for</span><b>Families, Shoppers, Couples</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="m-bali" tabindex="-1" aria-labelledby="t-bali" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="dm-hero" style="background-image: linear-gradient(to top, rgba(10,15,25,.85), rgba(10,15,25,.15)), url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80');">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <span class="dcard-country text-white-50"><i class="bi bi-geo-alt"></i> Indonesia</span>
+                <h2 id="t-bali">Bali</h2>
+                <p><i class="bi bi-star-fill"></i> 4.9 &nbsp;(1,780 reviews) &nbsp;&middot;&nbsp; 6 Days / 5 Nights</p>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h5>About Bali</h5>
+                        <p class="text-muted">Bali mixes beach days with temple visits and green rice terraces. Ubud is the cultural heart; the south coast has the surf and sunsets.</p>
+
+                        <h5 class="mt-4">Highlights</h5>
+                        <ul class="checks two-col"><li><i class="bi bi-check-circle-fill"></i> Tegallalang rice terraces</li><li><i class="bi bi-check-circle-fill"></i> Uluwatu temple sunset</li><li><i class="bi bi-check-circle-fill"></i> Ubud monkey forest</li><li><i class="bi bi-check-circle-fill"></i> Nusa Penida day trip</li></ul>
+
+                        <h5 class="mt-4">Sample itinerary</h5>
+                        <div class="steps"><div class="step"><span class="step-day">Day 1</span><p>Arrive, Seminyak beach sunset</p></div><div class="step"><span class="step-day">Day 2</span><p>Ubud: rice terraces and monkey forest</p></div><div class="step"><span class="step-day">Day 3</span><p>Waterfalls and a Balinese cooking class</p></div><div class="step"><span class="step-day">Day 4</span><p>Nusa Penida island day trip</p></div><div class="step"><span class="step-day">Day 5</span><p>Uluwatu temple and Kecak dance</p></div><div class="step"><span class="step-day">Day 6</span><p>Departure</p></div></div>
+
+                        <h5 class="mt-4">What's included</h5>
+                        <ul class="checks two-col small-check"><li><i class="bi bi-check2"></i> 5 nights stay</li><li><i class="bi bi-check2"></i> Daily breakfast</li><li><i class="bi bi-check2"></i> Nusa Penida trip</li><li><i class="bi bi-check2"></i> Private driver</li><li><i class="bi bi-check2"></i> Airport transfers</li></ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="book-box">
+                            <small>Starting from</small>
+                            <strong>&#8377;55,000</strong>
+                            <span>per person</span>
+                            <a href="#" class="btn btn-primary w-100 mt-3">Book This Trip</a>
+                            <a href="#" class="btn btn-outline-dark w-100 mt-2"><i class="bi bi-heart"></i> Save for Later</a>
+                        </div>
+                        <div class="facts">
+                            <h6>Quick facts</h6>
+                            <div class="fact"><span>Best time</span><b>Apr - Oct</b></div>
+                            <div class="fact"><span>Duration</span><b>6 Days / 5 Nights</b></div>
+                            <div class="fact"><span>Climate</span><b>Tropical; dry season Apr - Oct</b></div>
+                            <div class="fact"><span>Language</span><b>Indonesian, Balinese</b></div>
+                            <div class="fact"><span>Currency</span><b>Indonesian Rupiah</b></div>
+                            <div class="fact"><span>Ideal for</span><b>Honeymooners, Couples, Wellness travellers</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="m-phuket" tabindex="-1" aria-labelledby="t-phuket" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="dm-hero" style="background-image: linear-gradient(to top, rgba(10,15,25,.85), rgba(10,15,25,.15)), url('https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=1200&q=80');">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <span class="dcard-country text-white-50"><i class="bi bi-geo-alt"></i> Thailand</span>
+                <h2 id="t-phuket">Phuket</h2>
+                <p><i class="bi bi-star-fill"></i> 4.6 &nbsp;(1,120 reviews) &nbsp;&middot;&nbsp; 5 Days / 4 Nights</p>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h5>About Phuket</h5>
+                        <p class="text-muted">Phuket is Thailand's largest island, with busy beaches, quiet coves, and boat trips to nearby limestone islands.</p>
+
+                        <h5 class="mt-4">Highlights</h5>
+                        <ul class="checks two-col"><li><i class="bi bi-check-circle-fill"></i> Phi Phi islands tour</li><li><i class="bi bi-check-circle-fill"></i> Old Phuket Town</li><li><i class="bi bi-check-circle-fill"></i> Big Buddha viewpoint</li><li><i class="bi bi-check-circle-fill"></i> Patong and street food</li></ul>
+
+                        <h5 class="mt-4">Sample itinerary</h5>
+                        <div class="steps"><div class="step"><span class="step-day">Day 1</span><p>Arrive, Patong beach evening</p></div><div class="step"><span class="step-day">Day 2</span><p>Phi Phi islands speedboat tour</p></div><div class="step"><span class="step-day">Day 3</span><p>Big Buddha, Wat Chalong and Old Town</p></div><div class="step"><span class="step-day">Day 4</span><p>James Bond Island tour</p></div><div class="step"><span class="step-day">Day 5</span><p>Free morning and departure</p></div></div>
+
+                        <h5 class="mt-4">What's included</h5>
+                        <ul class="checks two-col small-check"><li><i class="bi bi-check2"></i> 4 nights stay</li><li><i class="bi bi-check2"></i> Daily breakfast</li><li><i class="bi bi-check2"></i> Island tours with lunch</li><li><i class="bi bi-check2"></i> Airport transfers</li></ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="book-box">
+                            <small>Starting from</small>
+                            <strong>&#8377;48,000</strong>
+                            <span>per person</span>
+                            <a href="#" class="btn btn-primary w-100 mt-3">Book This Trip</a>
+                            <a href="#" class="btn btn-outline-dark w-100 mt-2"><i class="bi bi-heart"></i> Save for Later</a>
+                        </div>
+                        <div class="facts">
+                            <h6>Quick facts</h6>
+                            <div class="fact"><span>Best time</span><b>Nov - Apr</b></div>
+                            <div class="fact"><span>Duration</span><b>5 Days / 4 Nights</b></div>
+                            <div class="fact"><span>Climate</span><b>Hot all year; rainy season May - Oct</b></div>
+                            <div class="fact"><span>Language</span><b>Thai, English</b></div>
+                            <div class="fact"><span>Currency</span><b>Thai Baht</b></div>
+                            <div class="fact"><span>Ideal for</span><b>Friends, Families, Beach lovers</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="m-singapore" tabindex="-1" aria-labelledby="t-singapore" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="dm-hero" style="background-image: linear-gradient(to top, rgba(10,15,25,.85), rgba(10,15,25,.15)), url('https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1200&q=80');">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <span class="dcard-country text-white-50"><i class="bi bi-geo-alt"></i> Singapore</span>
+                <h2 id="t-singapore">Singapore</h2>
+                <p><i class="bi bi-star-fill"></i> 4.8 &nbsp;(1,060 reviews) &nbsp;&middot;&nbsp; 4 Days / 3 Nights</p>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h5>About Singapore</h5>
+                        <p class="text-muted">Singapore is a clean, walkable city-state with excellent public transport, mixed food cultures and family-friendly attractions.</p>
+
+                        <h5 class="mt-4">Highlights</h5>
+                        <ul class="checks two-col"><li><i class="bi bi-check-circle-fill"></i> Gardens by the Bay</li><li><i class="bi bi-check-circle-fill"></i> Sentosa island</li><li><i class="bi bi-check-circle-fill"></i> Hawker centre food trail</li><li><i class="bi bi-check-circle-fill"></i> Marina Bay night views</li></ul>
+
+                        <h5 class="mt-4">Sample itinerary</h5>
+                        <div class="steps"><div class="step"><span class="step-day">Day 1</span><p>Arrive, Marina Bay and Merlion</p></div><div class="step"><span class="step-day">Day 2</span><p>Gardens by the Bay and Chinatown</p></div><div class="step"><span class="step-day">Day 3</span><p>Sentosa island and Universal Studios</p></div><div class="step"><span class="step-day">Day 4</span><p>Little India and departure</p></div></div>
+
+                        <h5 class="mt-4">What's included</h5>
+                        <ul class="checks two-col small-check"><li><i class="bi bi-check2"></i> 3 nights stay</li><li><i class="bi bi-check2"></i> Daily breakfast</li><li><i class="bi bi-check2"></i> Gardens by the Bay ticket</li><li><i class="bi bi-check2"></i> Sentosa pass</li><li><i class="bi bi-check2"></i> Airport transfers</li></ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="book-box">
+                            <small>Starting from</small>
+                            <strong>&#8377;60,000</strong>
+                            <span>per person</span>
+                            <a href="#" class="btn btn-primary w-100 mt-3">Book This Trip</a>
+                            <a href="#" class="btn btn-outline-dark w-100 mt-2"><i class="bi bi-heart"></i> Save for Later</a>
+                        </div>
+                        <div class="facts">
+                            <h6>Quick facts</h6>
+                            <div class="fact"><span>Best time</span><b>Feb - Apr</b></div>
+                            <div class="fact"><span>Duration</span><b>4 Days / 3 Nights</b></div>
+                            <div class="fact"><span>Climate</span><b>Warm and humid all year; short showers common</b></div>
+                            <div class="fact"><span>Language</span><b>English, Malay, Mandarin, Tamil</b></div>
+                            <div class="fact"><span>Currency</span><b>Singapore Dollar</b></div>
+                            <div class="fact"><span>Ideal for</span><b>Families, First-time travellers, Foodies</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="m-maldives" tabindex="-1" aria-labelledby="t-maldives" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="dm-hero" style="background-image: linear-gradient(to top, rgba(10,15,25,.85), rgba(10,15,25,.15)), url('https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=1200&q=80');">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <span class="dcard-country text-white-50"><i class="bi bi-geo-alt"></i> Maldives</span>
+                <h2 id="t-maldives">Maldives</h2>
+                <p><i class="bi bi-star-fill"></i> 4.9 &nbsp;(760 reviews) &nbsp;&middot;&nbsp; 5 Days / 4 Nights</p>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h5>About Maldives</h5>
+                        <p class="text-muted">The Maldives is a chain of coral atolls where each resort is usually its own island. Expect snorkelling, calm lagoons and total relaxation.</p>
+
+                        <h5 class="mt-4">Highlights</h5>
+                        <ul class="checks two-col"><li><i class="bi bi-check-circle-fill"></i> Overwater villa stay</li><li><i class="bi bi-check-circle-fill"></i> Snorkelling with reef fish</li><li><i class="bi bi-check-circle-fill"></i> Sandbank picnic</li><li><i class="bi bi-check-circle-fill"></i> Sunset dolphin cruise</li></ul>
+
+                        <h5 class="mt-4">Sample itinerary</h5>
+                        <div class="steps"><div class="step"><span class="step-day">Day 1</span><p>Arrive and speedboat to resort</p></div><div class="step"><span class="step-day">Day 2</span><p>Snorkelling and lagoon time</p></div><div class="step"><span class="step-day">Day 3</span><p>Sandbank picnic and sunset cruise</p></div><div class="step"><span class="step-day">Day 4</span><p>Spa and optional diving</p></div><div class="step"><span class="step-day">Day 5</span><p>Breakfast and departure</p></div></div>
+
+                        <h5 class="mt-4">What's included</h5>
+                        <ul class="checks two-col small-check"><li><i class="bi bi-check2"></i> 4 nights stay</li><li><i class="bi bi-check2"></i> Daily breakfast and dinner</li><li><i class="bi bi-check2"></i> Speedboat transfers</li><li><i class="bi bi-check2"></i> Snorkel kit</li><li><i class="bi bi-check2"></i> Sunset cruise</li></ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="book-box">
+                            <small>Starting from</small>
+                            <strong>&#8377;85,000</strong>
+                            <span>per person</span>
+                            <a href="#" class="btn btn-primary w-100 mt-3">Book This Trip</a>
+                            <a href="#" class="btn btn-outline-dark w-100 mt-2"><i class="bi bi-heart"></i> Save for Later</a>
+                        </div>
+                        <div class="facts">
+                            <h6>Quick facts</h6>
+                            <div class="fact"><span>Best time</span><b>Nov - Apr</b></div>
+                            <div class="fact"><span>Duration</span><b>5 Days / 4 Nights</b></div>
+                            <div class="fact"><span>Climate</span><b>Sunny and warm; wetter May - Oct</b></div>
+                            <div class="fact"><span>Language</span><b>Dhivehi, English</b></div>
+                            <div class="fact"><span>Currency</span><b>Maldivian Rufiyaa</b></div>
+                            <div class="fact"><span>Ideal for</span><b>Honeymooners, Couples, Divers</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="m-paris" tabindex="-1" aria-labelledby="t-paris" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="dm-hero" style="background-image: linear-gradient(to top, rgba(10,15,25,.85), rgba(10,15,25,.15)), url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80');">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <span class="dcard-country text-white-50"><i class="bi bi-geo-alt"></i> France</span>
+                <h2 id="t-paris">Paris</h2>
+                <p><i class="bi bi-star-fill"></i> 4.8 &nbsp;(940 reviews) &nbsp;&middot;&nbsp; 7 Days / 6 Nights</p>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h5>About Paris</h5>
+                        <p class="text-muted">Paris is best explored on foot: museums, riverside walks, cafes and neighbourhoods like Montmartre and Le Marais.</p>
+
+                        <h5 class="mt-4">Highlights</h5>
+                        <ul class="checks two-col"><li><i class="bi bi-check-circle-fill"></i> Eiffel Tower summit</li><li><i class="bi bi-check-circle-fill"></i> Louvre Museum</li><li><i class="bi bi-check-circle-fill"></i> Seine river cruise</li><li><i class="bi bi-check-circle-fill"></i> Versailles day trip</li></ul>
+
+                        <h5 class="mt-4">Sample itinerary</h5>
+                        <div class="steps"><div class="step"><span class="step-day">Day 1</span><p>Arrive, Seine river walk</p></div><div class="step"><span class="step-day">Day 2</span><p>Eiffel Tower and Trocadero</p></div><div class="step"><span class="step-day">Day 3</span><p>Louvre and Tuileries Garden</p></div><div class="step"><span class="step-day">Day 4</span><p>Montmartre and Sacre-Coeur</p></div><div class="step"><span class="step-day">Day 5</span><p>Versailles day trip</p></div><div class="step"><span class="step-day">Day 6</span><p>Le Marais and shopping</p></div><div class="step"><span class="step-day">Day 7</span><p>Departure</p></div></div>
+
+                        <h5 class="mt-4">What's included</h5>
+                        <ul class="checks two-col small-check"><li><i class="bi bi-check2"></i> 6 nights stay</li><li><i class="bi bi-check2"></i> Daily breakfast</li><li><i class="bi bi-check2"></i> Museum passes</li><li><i class="bi bi-check2"></i> Seine cruise</li><li><i class="bi bi-check2"></i> Airport transfers</li></ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="book-box">
+                            <small>Starting from</small>
+                            <strong>&#8377;1,20,000</strong>
+                            <span>per person</span>
+                            <a href="#" class="btn btn-primary w-100 mt-3">Book This Trip</a>
+                            <a href="#" class="btn btn-outline-dark w-100 mt-2"><i class="bi bi-heart"></i> Save for Later</a>
+                        </div>
+                        <div class="facts">
+                            <h6>Quick facts</h6>
+                            <div class="fact"><span>Best time</span><b>Apr - Jun</b></div>
+                            <div class="fact"><span>Duration</span><b>7 Days / 6 Nights</b></div>
+                            <div class="fact"><span>Climate</span><b>Mild spring; warm summers; cold winters</b></div>
+                            <div class="fact"><span>Language</span><b>French, English</b></div>
+                            <div class="fact"><span>Currency</span><b>Euro</b></div>
+                            <div class="fact"><span>Ideal for</span><b>Couples, Art lovers, First-time Europe</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var chips = document.querySelectorAll('.chip');
+    var items = document.querySelectorAll('.place-item');
+    var search = document.getElementById('placeSearch');
+    var count = document.getElementById('placeCount');
+    var empty = document.getElementById('emptyState');
+    var active = 'All';
+
+    function apply() {
+        var q = search.value.trim().toLowerCase(), shown = 0;
+        items.forEach(function (item) {
+            var ok = (active === 'All' || item.dataset.region === active) && item.dataset.name.indexOf(q) !== -1;
+            item.style.display = ok ? '' : 'none';
+            if (ok) shown++;
+        });
+        count.textContent = shown + (shown === 1 ? ' destination' : ' destinations');
+        empty.style.display = shown ? 'none' : 'block';
+    }
+    chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+            chips.forEach(function (c) { c.classList.remove('active'); });
+            chip.classList.add('active');
+            active = chip.dataset.filter;
+            apply();
+        });
+    });
+    search.addEventListener('input', apply);
+    apply();
+</script>
+
+{% endblock %}

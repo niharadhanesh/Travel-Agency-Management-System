@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
+
+from .destination_data import DESTINATIONS
 
 
 # ---------- Public pages ----------
@@ -12,6 +15,20 @@ def home(request):
 
 def destinations(request):
     return render(request, 'destinations.html')
+
+
+@login_required(login_url='signup')
+def destination_detail(request, slug):
+    place = DESTINATIONS.get(slug)
+    if place is None:
+        raise Http404('Destination not found')
+
+    # next three destinations (wraps around) for the "More places" row
+    slugs = list(DESTINATIONS)
+    i = slugs.index(slug)
+    related = [DESTINATIONS[slugs[(i + n) % len(slugs)]] for n in (1, 2, 3)]
+
+    return render(request, 'destination_detail.html', {'place': place, 'related': related})
 
 
 # ---------- Authentication ----------
@@ -91,3 +108,11 @@ def customer_dashboard(request):
         return redirect('dashboard')
 
     return render(request, 'customer_dashboard.html')
+
+
+@login_required(login_url='login')
+def customer_destinations(request):
+    if request.user.is_superuser:
+        return redirect('dashboard')
+
+    return render(request, 'customer_destinations.html')
