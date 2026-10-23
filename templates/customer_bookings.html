@@ -1,0 +1,94 @@
+{% extends 'customer_base.html' %}
+
+{% block title %}My Bookings - Wanderly{% endblock %}
+
+{% block page_title %}My Bookings{% endblock %}
+
+{% block content %}
+
+<style>
+    .bk-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .bk-head h2 { font-size: 1.5rem; margin: 0; }
+    .bk-head p { margin: 2px 0 0; color: var(--muted); font-size: 0.92rem; }
+
+    .bk-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .bk-stat { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; }
+    .bk-stat span { display: block; color: var(--muted); font-size: 0.82rem; }
+    .bk-stat strong { font-size: 1.5rem; font-weight: 800; }
+
+    .bk-card { display: flex; gap: 20px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .bk-card:first-child { padding-top: 0; }
+    .bk-card:last-child { border-bottom: 0; padding-bottom: 0; }
+    .bk-card img { width: 130px; height: 96px; object-fit: cover; border-radius: 12px; flex-shrink: 0; background: linear-gradient(135deg, #0f766e, #111827); }
+    .bk-main { flex: 1; min-width: 0; }
+    .bk-main h5 { margin: 0 0 2px; font-size: 1.1rem; }
+    .bk-ref { font-size: 0.8rem; font-weight: 700; color: var(--accent-dark); letter-spacing: 0.06em; }
+    .bk-meta { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 8px; font-size: 0.86rem; color: var(--muted); }
+    .bk-meta i { color: var(--accent); margin-right: 4px; }
+    .bk-side { text-align: right; flex-shrink: 0; }
+    .bk-side strong { display: block; font-size: 1.25rem; margin-top: 8px; }
+    .bk-side small { color: var(--muted); font-size: 0.78rem; }
+
+    .bk-empty { text-align: center; padding: 50px 0 30px; color: var(--muted); }
+    .bk-empty i { font-size: 2.4rem; color: var(--accent); }
+    .bk-empty h5 { color: var(--ink); margin: 12px 0 6px; }
+
+    @media (max-width: 767px) {
+        .bk-stats { grid-template-columns: repeat(2, 1fr); }
+        .bk-card { flex-wrap: wrap; }
+        .bk-card img { width: 100%; height: 150px; }
+        .bk-side { text-align: left; display: flex; align-items: center; gap: 14px; width: 100%; }
+        .bk-side strong { margin: 0; }
+    }
+</style>
+
+<div class="bk-head">
+    <div>
+        <h2>My Bookings</h2>
+        <p>Every trip you've booked with Wanderly, newest first.</p>
+    </div>
+    <a href="{% url 'customer_destinations' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Book a New Trip</a>
+</div>
+
+{% if bookings %}
+<div class="bk-stats">
+    <div class="bk-stat"><span>Total bookings</span><strong>{{ total_count }}</strong></div>
+    <div class="bk-stat"><span>Confirmed</span><strong>{{ confirmed_count }}</strong></div>
+    <div class="bk-stat"><span>Pending</span><strong>{{ pending_count }}</strong></div>
+    <div class="bk-stat"><span>Total value</span><strong>&#8377;{{ total_value|floatformat:"0" }}</strong></div>
+</div>
+
+<div class="panel">
+    {% for b in bookings %}
+    <div class="bk-card">
+        <img src="{{ b.thumb }}" alt="{{ b.destination_name }}" onerror="this.style.display='none'">
+        <div class="bk-main">
+            <span class="bk-ref">{{ b.reference }}</span>
+            <h5>{{ b.destination_name }}</h5>
+            <div class="bk-meta">
+                <span><i class="bi bi-calendar3"></i> {{ b.travel_date|date:"d M Y" }}</span>
+                <span><i class="bi bi-people"></i> {{ b.travellers }} traveller{{ b.travellers|pluralize }}</span>
+                <span><i class="bi bi-person"></i> {{ b.full_name }}</span>
+                <span><i class="bi bi-clock-history"></i> Booked {{ b.created_at|date:"d M Y" }}</span>
+            </div>
+        </div>
+        <div class="bk-side">
+            <span class="badge-status {{ b.status }}">{{ b.get_status_display }}</span>
+            <strong>&#8377;{{ b.total_amount|floatformat:"0" }}</strong>
+            <small>Total amount</small>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="panel">
+    <div class="bk-empty">
+        <i class="bi bi-suitcase-lg"></i>
+        <h5>No bookings yet</h5>
+        <p>Pick a destination and book your first trip.</p>
+        <a href="{% url 'customer_destinations' %}" class="btn btn-primary">Explore Destinations</a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

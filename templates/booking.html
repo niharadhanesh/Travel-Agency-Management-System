@@ -1,0 +1,179 @@
+{% extends 'customer_base.html' %}
+
+{% block title %}{% if booking %}Booking Confirmed{% else %}Book {{ place.name }}{% endif %} - Wanderly{% endblock %}
+
+{% block page_title %}{% if booking %}Booking Confirmed{% else %}Book Your Trip{% endif %}{% endblock %}
+
+{% block content %}
+
+<style>
+    .bk-trip { display: flex; gap: 16px; align-items: center; }
+    .bk-trip img { width: 96px; height: 80px; object-fit: cover; border-radius: 12px; background: linear-gradient(135deg, #0f766e, #111827); flex-shrink: 0; }
+    .bk-trip h4 { font-size: 1.25rem; margin: 0 0 2px; }
+    .bk-trip p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+    .bk-trip i { color: var(--accent); }
+
+    .form-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+    .bk-form .form-control, .bk-form .form-select {
+        height: 48px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        box-shadow: none;
+    }
+    .bk-form textarea.form-control { height: auto; }
+    .bk-form .form-control:focus, .bk-form .form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15); }
+    .bk-section { font-size: 1.05rem; margin: 6px 0 16px; }
+
+    .stepper { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 10px; height: 48px; overflow: hidden; background: #fff; }
+    .stepper button { width: 48px; height: 100%; border: 0; background: var(--bg-soft); font-size: 1.2rem; color: var(--ink); }
+    .stepper button:hover { background: #e6f4f1; color: var(--accent); }
+    .stepper input { flex: 1; min-width: 0; text-align: center; border: 0; font-weight: 700; height: 100%; background: #fff; }
+    .stepper input:focus { outline: none; }
+
+    .sum { position: sticky; top: 96px; }
+    .sum-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; font-size: 0.92rem; border-bottom: 1px solid var(--line); }
+    .sum-row span:first-child { color: var(--muted); }
+    .sum-row span:last-child { font-weight: 600; text-align: right; }
+    .sum-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 16px; }
+    .sum-total strong { font-size: 1.8rem; font-weight: 800; }
+    .sum-note { background: #e6f4f1; color: var(--accent-dark); border-radius: 10px; padding: 12px 14px; font-size: 0.85rem; margin-top: 16px; }
+    .bk-error { background: #fef2f2; color: #b91c1c; border-radius: 10px; padding: 10px 14px; font-size: 0.9rem; margin-bottom: 18px; }
+    .bk-submit { height: 52px; font-size: 1rem; }
+
+    .done { max-width: 680px; margin: 10px auto 0; text-align: center; }
+    .done-icon { width: 72px; height: 72px; border-radius: 50%; background: #dcfce7; color: #15803d; font-size: 2.2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .done h2 { font-size: 1.9rem; font-weight: 800; }
+    .done .ref { display: inline-block; background: var(--bg-soft); border: 1px dashed var(--accent); color: var(--accent-dark); font-weight: 800; letter-spacing: 0.08em; padding: 8px 18px; border-radius: 10px; margin: 10px 0 24px; }
+    .done .panel { text-align: left; height: auto; }
+
+    @media (max-width: 991px) { .sum { position: static; } }
+</style>
+
+{% if booking %}
+
+<div class="done">
+    <div class="done-icon"><i class="bi bi-check-lg"></i></div>
+    <h2>Booking request received</h2>
+    <p class="text-muted mb-0">Thank you, {{ booking.full_name }}. Our team will contact you to confirm your trip.</p>
+    <div class="ref">{{ booking.reference }}</div>
+
+    <div class="panel">
+        <div class="bk-trip mb-3">
+            <img src="{{ place.thumb }}" alt="{{ place.name }}" onerror="this.style.display='none'">
+            <div>
+                <h4>{{ place.name }}</h4>
+                <p><i class="bi bi-geo-alt"></i> {{ place.country }} &middot; {{ place.duration }}</p>
+            </div>
+        </div>
+        <div class="sum-row"><span>Travel date</span><span>{{ booking.travel_date|date:"d M Y" }}</span></div>
+        <div class="sum-row"><span>Travellers</span><span>{{ booking.travellers }}</span></div>
+        <div class="sum-row"><span>Contact</span><span>{{ booking.phone }}</span></div>
+        <div class="sum-row"><span>Status</span><span><span class="badge-status pending">Pending</span></span></div>
+        <div class="sum-total"><span class="text-muted">Estimated total</span><strong>&#8377;{{ booking.total_amount|floatformat:0 }}</strong></div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+        <a href="{% url 'customer_dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+        <a href="{% url 'customer_destinations' %}" class="btn btn-outline-dark">Explore More Places</a>
+    </div>
+</div>
+
+{% else %}
+
+<form method="post" class="bk-form" action="{% url 'book_trip' place.slug %}">
+    {% csrf_token %}
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+            <div class="panel">
+                <div class="bk-trip mb-4">
+                    <img src="{{ place.thumb }}" alt="{{ place.name }}" onerror="this.style.display='none'">
+                    <div>
+                        <h4>{{ place.name }}</h4>
+                        <p><i class="bi bi-geo-alt"></i> {{ place.country }} &middot; <i class="bi bi-clock"></i> {{ place.duration }}</p>
+                    </div>
+                </div>
+
+                {% if error %}<div class="bk-error">{{ error }}</div>{% endif %}
+
+                <h5 class="bk-section">Trip details</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label" for="travel_date">Travel date</label>
+                        <input type="date" id="travel_date" name="travel_date" class="form-control" min="{{ min_date|date:'Y-m-d' }}" value="{{ values.travel_date }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="travellers">Travellers</label>
+                        <div class="stepper">
+                            <button type="button" id="minus" aria-label="Fewer travellers">&minus;</button>
+                            <input type="number" id="travellers" name="travellers" value="{{ values.travellers|default:'2' }}" min="1" max="10" required>
+                            <button type="button" id="plus" aria-label="More travellers">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="bk-section">Contact details</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="full_name">Full name</label>
+                        <input type="text" id="full_name" name="full_name" class="form-control" value="{{ values.full_name|default:request.user.get_full_name|default:request.user.username }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="phone">Phone number</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="+91 98765 43210" value="{{ values.phone }}" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" value="{{ values.email|default:request.user.email }}" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="notes">Special requests <span class="text-muted fw-normal">(optional)</span></label>
+                        <textarea id="notes" name="notes" rows="3" class="form-control" placeholder="Dietary needs, room preferences, celebrations...">{{ values.notes }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="panel sum">
+                <h5 class="mb-3">Booking summary</h5>
+                <div class="sum-row"><span>Package</span><span>{{ place.name }}</span></div>
+                <div class="sum-row"><span>Duration</span><span>{{ place.duration }}</span></div>
+                <div class="sum-row"><span>Price per person</span><span>&#8377;{{ place.price }}</span></div>
+                <div class="sum-row"><span>Travellers</span><span id="sumTrav">2</span></div>
+                <div class="sum-total"><span class="text-muted">Estimated total</span><strong id="sumTotal">&#8377;0</strong></div>
+
+                <button type="submit" class="btn btn-primary w-100 bk-submit mt-3">Confirm Booking</button>
+                <a href="{% url 'destination_detail' place.slug %}" class="btn btn-outline-dark w-100 mt-2">Back to details</a>
+
+                <div class="sum-note"><i class="bi bi-info-circle me-1"></i> No payment now. Our team will confirm availability and share payment details.</div>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+<script>
+    var unit = {{ unit_price }};
+    var input = document.getElementById('travellers');
+
+    function clamp(v) {
+        v = parseInt(v, 10);
+        if (isNaN(v) || v < 1) v = 1;
+        if (v > 10) v = 10;
+        return v;
+    }
+    function update() {
+        var n = clamp(input.value);
+        document.getElementById('sumTrav').textContent = n;
+        document.getElementById('sumTotal').innerHTML = '&#8377;' + (unit * n).toLocaleString('en-IN');
+    }
+    document.getElementById('minus').addEventListener('click', function () { input.value = clamp(input.value) - 1 || 1; update(); });
+    document.getElementById('plus').addEventListener('click', function () { input.value = clamp(input.value) + 1; update(); });
+    input.addEventListener('input', update);
+    update();
+</script>
+
+{% endif %}
+
+{% endblock %}

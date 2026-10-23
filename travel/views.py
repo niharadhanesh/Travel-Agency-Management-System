@@ -3,6 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
+from datetime import date, timedelta
+
+from .models import Booking
 
 from .destination_data import DESTINATIONS
 
@@ -116,3 +119,76 @@ def customer_destinations(request):
         return redirect('dashboard')
 
     return render(request, 'customer_destinations.html')
+
+
+@login_required(login_url='login')
+def book_trip(request, slug):
+    if request.user.is_superuser:
+        return redirect('dashboard')
+
+    place = DESTINATIONS.get(slug)
+    if place is None:
+        raise Http404('Destination not found')
+
+    unit_price = int(place['price'].replace(',', ''))
+    min_date = date.today() + timedelta(days=1)
+    error = None
+    values = {}
+
+    if request.method == 'POST':
+        values = request.POST
+        try:
+            travellers = int(request.POST.get('travellers', 0))
+            travel_date = date.fromisoformat(request.POST.get('travel_date', ''))
+        except ValueError:
+            travellers, travel_date = 0, None
+
+        phone = request.POST.get('phone', '').strip()
+
+        if travel_date is None or travel_date < min_date:
+            error = 'Please choose a travel date from tomorrow onwards.'
+        elif not 1 <= travellers <= 10:
+            error = 'Travellers must be between 1 and 10.'
+        elif len(phone) < 7:
+            error = 'Please enter a valid phone number.'
+        else:
+            booking = Booking.objects.create(
+                user=request.user,
+                destination_slug=slug,
+                destination_name=place['name'],
+                travel_date=travel_date,
+                travellers=travellers,
+                full_name=request.POST.get('full_name', '').strip(),
+                email=request.POST.get('email', '').strip(),
+                phone=phone,
+                notes=request.POST.get('notes', '').strip(),
+                total_amount=unit_price * travellers,
+            )
+            return render(request, 'booking.html', {'place': place, 'booking': booking})
+
+    return render(request, 'booking.html', {
+        'place': place,
+        'unit_price': unit_price,
+        'min_date': min_date,
+        'values': values,
+        'error': error,
+    })
+    
+@login_required(login_url='login')
+def my_bookings(request):
+    if request.user.is_superuser:
+        return redirect('dashboard')
+
+    bookings = list(Booking.objects.filter(user=request.user))
+    for b in bookings:
+        place = DESTINATIONS.get(b.destination_slug)
+        b.thumb = place['thumb'] if place else ''
+
+    active = [b for b in bookings if b.status != 'cancelled']
+    return render(request, 'customer_bookings.html', {
+        'bookings': bookings,
+        'total_count': len(bookings),
+        'confirmed_count': sum(b.status == 'confirmed' for b in bookings),
+        'pending_count': sum(b.status == 'pending' for b in bookings),
+        'total_value': sum(b.total_amount for b in active),
+    })
