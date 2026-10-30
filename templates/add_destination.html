@@ -1,0 +1,187 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Add Destination - Wanderly Admin{% endblock %}
+
+{% block page_title %}Add Destination{% endblock %}
+
+{% block content %}
+
+<style>
+    .form-intro { margin-bottom: 24px; }
+    .form-intro h2 { font-size: 1.5rem; margin: 0; }
+    .form-intro p { margin: 2px 0 0; color: var(--muted); font-size: 0.92rem; }
+
+    .f-panel { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; margin-bottom: 20px; }
+    .f-panel h5 { font-size: 1.05rem; margin: 0 0 4px; }
+    .f-panel > p { color: var(--muted); font-size: 0.88rem; margin-bottom: 18px; }
+
+    label { font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; display: block; }
+    .form-control, .form-select { border: 1px solid var(--line); border-radius: 10px; padding: 0.65rem 0.85rem; box-shadow: none; }
+    .form-control:focus, .form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15); }
+    .hint { display: block; color: var(--muted); font-size: 0.78rem; margin-top: 5px; }
+    .field-error { color: #b91c1c; font-size: 0.82rem; margin-top: 5px; }
+
+    .or-line { text-align: center; color: var(--muted); font-size: 0.8rem; margin: 10px 0; }
+    .preview { height: 190px; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, #0f766e, #111827); margin-bottom: 16px; display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; }
+    .preview img { width: 100%; height: 100%; object-fit: cover; display: none; }
+
+    .side-sticky { position: sticky; top: 90px; }
+    .tips { list-style: none; padding: 0; margin: 14px 0 0; font-size: 0.86rem; color: var(--muted); }
+    .tips li { margin-bottom: 8px; }
+    .tips i { color: var(--accent); margin-right: 6px; }
+    .form-error-box { background: #fef2f2; color: #b91c1c; border-radius: 10px; padding: 10px 14px; font-size: 0.9rem; margin-bottom: 18px; }
+</style>
+
+<div class="form-intro">
+    <h2>New destination</h2>
+    <p>Fill in the details below. It appears on the public and customer destination pages as soon as you save.</p>
+</div>
+
+{% if form.errors %}<div class="form-error-box"><i class="bi bi-exclamation-circle me-1"></i> Please fix the highlighted fields and save again.</div>{% endif %}
+
+<form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <div class="row g-4">
+        <div class="col-lg-8">
+
+            <div class="f-panel">
+                <h5>Basics</h5>
+                <p>Where is it, and how should it be described in one line?</p>
+                <div class="row">
+                    <div class="col-md-6"><div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}">Destination name</label>
+                        {{ form.name }}
+                        
+                        {% for e in form.name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div></div>
+                    <div class="col-md-6"><div class="mb-3">
+                        <label for="{{ form.country.id_for_label }}">Country</label>
+                        {{ form.country }}
+                        
+                        {% for e in form.country.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div></div>
+                    <div class="col-md-12"><div class="mb-3">
+                        <label for="{{ form.region.id_for_label }}">Region</label>
+                        {{ form.region }}
+                        <small class="hint">Used by the filter chips on the destinations page</small>
+                        {% for e in form.region.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div></div>
+                    <div class="col-12"><div class="mb-3">
+                        <label for="{{ form.tagline.id_for_label }}">Tagline</label>
+                        {{ form.tagline }}
+                        
+                        {% for e in form.tagline.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div></div>
+                </div>
+            </div>
+
+            <div class="f-panel">
+                <h5>Trip details</h5>
+                <p>These show in the quick facts and on the booking page.</p>
+                <div class="row">
+                    <div class="col-md-6"><div class="mb-3">
+                        <label for="{{ form.best_time.id_for_label }}">Best time to visit</label>
+                        {{ form.best_time }}
+                        
+                        {% for e in form.best_time.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div></div>
+                    <div class="col-md-6"><div class="mb-3">
+                        <label for="{{ form.duration.id_for_label }}">Duration</label>
+                        {{ form.duration }}
+                        
+                        {% for e in form.duration.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div></div>
+                    <div class="col-md-6"><div class="mb-3">
+                        <label for="{{ form.price.id_for_label }}">Starting price per person (INR)</label>
+                        {{ form.price }}
+                        <small class="hint">Numbers only, no commas</small>
+                        {% for e in form.price.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div></div>
+                    <div class="col-md-6"><div class="mb-3">
+                        <label for="{{ form.language.id_for_label }}">Language</label>
+                        {{ form.language }}
+                        
+                        {% for e in form.language.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div></div>
+                    <div class="col-12"><div class="mb-3">
+                        <label for="{{ form.currency.id_for_label }}">Currency</label>
+                        {{ form.currency }}
+                        
+                        {% for e in form.currency.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div></div>
+                </div>
+            </div>
+
+            <div class="f-panel">
+                <h5>Content</h5>
+                <p>Tell travellers what to expect.</p>
+                <div class="mb-3">
+                        <label for="{{ form.overview.id_for_label }}">Overview</label>
+                        {{ form.overview }}
+                        
+                        {% for e in form.overview.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div>
+                <div class="mb-3">
+                        <label for="{{ form.highlights.id_for_label }}">Highlights</label>
+                        {{ form.highlights }}
+                        <small class="hint">One per line: Title | short description</small>
+                        {% for e in form.highlights.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div>
+                <div class="mb-3">
+                        <label for="{{ form.itinerary.id_for_label }}">Day-by-day itinerary</label>
+                        {{ form.itinerary }}
+                        <small class="hint">One day per line: Title | what happens</small>
+                        {% for e in form.itinerary.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="side-sticky">
+                <div class="f-panel">
+                    <h5>Photo</h5>
+                    <p>Use a wide landscape photo.</p>
+                    <div class="preview" id="preview"><span id="previewText">No photo selected</span><img id="previewImg" alt="Preview"></div>
+                    <div class="mb-3">
+                        <label for="{{ form.image.id_for_label }}">Upload photo</label>
+                        {{ form.image }}
+                        
+                        {% for e in form.image.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div>
+                    <div class="or-line">or</div>
+                    <div class="mb-3">
+                        <label for="{{ form.image_url.id_for_label }}">Image link</label>
+                        {{ form.image_url }}
+                        <small class="hint">Paste a direct image URL if you don't have a file</small>
+                        {% for e in form.image_url.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mt-2"><i class="bi bi-check2-circle me-1"></i> Save Destination</button>
+                    <a href="{% url 'admin_destinations' %}" class="btn btn-outline-dark w-100 mt-2">Cancel</a>
+                    <ul class="tips">
+                        <li><i class="bi bi-info-circle"></i> Price is per person, in rupees.</li>
+                        <li><i class="bi bi-info-circle"></i> Customers can book it right away.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    var fileInput = document.getElementById('{{ form.image.id_for_label }}');
+    var urlInput = document.getElementById('{{ form.image_url.id_for_label }}');
+    var img = document.getElementById('previewImg');
+    var txt = document.getElementById('previewText');
+
+    function show(src) {
+        if (!src) { img.style.display = 'none'; txt.style.display = ''; return; }
+        img.src = src; img.style.display = 'block'; txt.style.display = 'none';
+    }
+    fileInput.addEventListener('change', function () {
+        if (fileInput.files && fileInput.files[0]) show(URL.createObjectURL(fileInput.files[0]));
+    });
+    urlInput.addEventListener('input', function () { show(urlInput.value.trim()); });
+    img.addEventListener('error', function () { show(''); });
+</script>
+
+{% endblock %}
