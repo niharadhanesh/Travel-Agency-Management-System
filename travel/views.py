@@ -11,6 +11,262 @@ from .destination_data import DESTINATIONS
 
 
 # ---------- Public pages ----------
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.views.decorators.http import require_POST
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from datetime import date, timedelta
+
+from .models import Booking, Destination
+from .forms import DestinationForm
+from .destination_data import DESTINATIONS
+
+
+def all_destinations():
+    """Built-in destinations plus the ones the admin added (active only)."""
+    places = dict(DESTINATIONS)
+    for d in Destination.objects.filter(is_active=True):
+        places[d.slug] = d.as_dict()
+    return places
+
+
+def added_destinations():
+    return [d.as_dict() for d in Destination.objects.filter(is_active=True)]
+
+
+# ---------- Public pages ----------
+
+def home(request):
+    return render(request, 'home.html')
+
+
+def destinations(request):
+    return render(request, 'destinations.html', {'extra_destinations': added_destinations()})
+
+
+@login_required(login_url='signup')
+def destination_detail(request, slug):
+    places = all_destinations()
+    place = places.get(slug)
+    if place is None:
+        raise Http404('Destination not found')
+
+    # next three destinations (wraps around) for the "More places" row
+    slugs = list(places)
+    i = slugs.index(slug)
+    related = [places[slugs[(i + n) % len(slugs)]] for n in (1, 2, 3)]
+
+    return render(request, 'destination_detail.html', {'place': place, 'related': related})
+
+
+# ---------- Authentication ----------
+
+def signup(request):
+    error = None
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password')
+        confirm = request.POST.get('confirm')
+
+        if password != confirm:
+            error = 'Passwords do not match.'
+        elif User.objects.filter(username=username).exists():
+            error = 'That username is already taken.'
+        elif User.objects.filter(email=email).exists():
+            error = 'An account with that email already exists.'
+        else:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+            )
+            login(request, user)
+            return redirect('customer_dashboard')
+
+    return render(request, 'signup.html', {'error': error})
+
+
+def login_view(request):
+    error = None
+
+    if request.method == 'POST':
+        user = authenticate(
+            request,
+            username=request.POST.get('username'),
+            password=request.POST.get('password'),
+        )
+
+        if user is not None:
+            login(request, user)
+
+            # SuperAdmin -> admin dashboard
+            if user.is_superuser:
+                return redirect('dashboard')
+
+            # Customer -> customer dashboard
+            return redirect('customer_dashboard')
+
+        error = 'Invalid username or password.'
+
+    return render(request, 'login.html', {'error': error})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+
+# ---------- Dashboards ----------
+
+@login_required(login_url='login')
+def dashboard(request):
+    # Admin dashboard: only SuperAdmin can access
+    if not request.user.is_superuser:
+        return redirect('customer_dashboard')
+
+    return render(request, 'dashboard.html')
+
+
+@login_required(login_url='login')
+def customer_dashboard(request):
+    # Customer dashboard: SuperAdmin goes to the admin dashboard instead
+    if request.user.is_superuser:
+        return redirect('dashboard')
+
+    return render(request, 'customer_dashboard.html')
+
+
+@login_required(login_url='login')
+def customer_destinations(request):
+    if request.user.is_superuser:
+        return redirect('dashboard')
+
+    return render(request, 'customer_destinations.html', {'extra_destinations': added_destinations()})
+
+
+@login_required(login_url='login')
+def book_trip(request, slug):
+    if request.user.is_superuser:
+        return redirect('dashboard')
+
+    place = all_destinations().get(slug)
+    if place is None:
+        raise Http404('Destination not found')
+
+    unit_price = int(place['price'].replace(',', ''))
+    min_date = date.today() + timedelta(days=1)
+    error = None
+    values = {}
+
+    if request.method == 'POST':
+        values = request.POST
+        try:
+            travellers = int(request.POST.get('travellers', 0))
+            travel_date = date.fromisoformat(request.POST.get('travel_date', ''))
+        except ValueError:
+            travellers, travel_date = 0, None
+
+        phone = request.POST.get('phone', '').strip()
+
+        if travel_date is None or travel_date < min_date:
+            error = 'Please choose a travel date from tomorrow onwards.'
+        elif not 1 <= travellers <= 10:
+            error = 'Travellers must be between 1 and 10.'
+        elif len(phone) < 7:
+            error = 'Please enter a valid phone number.'
+        else:
+            booking = Booking.objects.create(
+                user=request.user,
+                destination_slug=slug,
+                destination_name=place['name'],
+                travel_date=travel_date,
+                travellers=travellers,
+                full_name=request.POST.get('full_name', '').strip(),
+                email=request.POST.get('email', '').strip(),
+                phone=phone,
+                notes=request.POST.get('notes', '').strip(),
+                total_amount=unit_price * travellers,
+            )
+            return render(request, 'booking.html', {'place': place, 'booking': booking})
+
+    return render(request, 'booking.html', {
+        'place': place,
+        'unit_price': unit_price,
+        'min_date': min_date,
+        'values': values,
+        'error': error,
+    })
+
+
+@login_required(login_url='login')
+def my_bookings(request):
+    if request.user.is_superuser:
+        return redirect('dashboard')
+
+    bookings = list(Booking.objects.filter(user=request.user))
+    places = all_destinations()
+    for b in bookings:
+        place = places.get(b.destination_slug)
+        b.thumb = place['thumb'] if place else ''
+
+    active = [b for b in bookings if b.status != 'cancelled']
+    return render(request, 'customer_bookings.html', {
+        'bookings': bookings,
+        'total_count': len(bookings),
+        'confirmed_count': sum(b.status == 'confirmed' for b in bookings),
+        'pending_count': sum(b.status == 'pending' for b in bookings),
+        'total_value': sum(b.total_amount for b in active),
+    })
+
+
+# ---------- Admin: destinations ----------
+
+@login_required(login_url='login')
+def admin_destinations(request):
+    if not request.user.is_superuser:
+        return redirect('customer_dashboard')
+
+    return render(request, 'admin_destinations.html', {
+        'added': Destination.objects.all(),
+        'builtin': list(DESTINATIONS.values()),
+    })
+
+
+@login_required(login_url='login')
+def add_destination(request):
+    if not request.user.is_superuser:
+        return redirect('customer_dashboard')
+
+    if request.method == 'POST':
+        form = DestinationForm(request.POST, request.FILES)
+        if form.is_valid():
+            destination = form.save()
+            messages.success(request, f'{destination.name} was added and is now live on the website.')
+            return redirect('admin_destinations')
+    else:
+        form = DestinationForm()
+
+    return render(request, 'add_destination.html', {'form': form})
+
+
+@login_required(login_url='login')
+@require_POST
+def delete_destination(request, pk):
+    if not request.user.is_superuser:
+        return redirect('customer_dashboard')
+
+    destination = get_object_or_404(Destination, pk=pk)
+    name = destination.name
+    if destination.image:
+        destination.image.delete(save=False)
+    destination.delete()
+    messages.success(request, f'{name} was deleted.')
+    return redirect('admin_destinations')
 
 def home(request):
     return render(request, 'home.html')

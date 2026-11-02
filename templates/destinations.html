@@ -80,7 +80,7 @@
                         </div>
                         <div class="place-bottom">
                             <div><small>Starting from</small><strong>&#8377;25,000</strong></div>
-                            <a href="{% url 'signup' %}" class="btn btn-primary">View Details</a>
+                            <a href="{% url 'destination_detail' 'kerala' %}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -102,7 +102,7 @@
                         </div>
                         <div class="place-bottom">
                             <div><small>Starting from</small><strong>&#8377;18,000</strong></div>
-                            <a href="{% url 'signup' %}" class="btn btn-primary">View Details</a>
+                            <a href="{% url 'destination_detail' 'goa' %}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -124,7 +124,7 @@
                         </div>
                         <div class="place-bottom">
                             <div><small>Starting from</small><strong>&#8377;22,000</strong></div>
-                            <a href="{% url 'signup' %}" class="btn btn-primary">View Details</a>
+                            <a href="{% url 'destination_detail' 'manali' %}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -146,7 +146,7 @@
                         </div>
                         <div class="place-bottom">
                             <div><small>Starting from</small><strong>&#8377;45,000</strong></div>
-                            <a href="{% url 'signup' %}" class="btn btn-primary">View Details</a>
+                            <a href="{% url 'destination_detail' 'dubai' %}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -168,7 +168,7 @@
                         </div>
                         <div class="place-bottom">
                             <div><small>Starting from</small><strong>&#8377;55,000</strong></div>
-                            <a href="{% url 'signup' %}" class="btn btn-primary">View Details</a>
+                            <a href="{% url 'destination_detail' 'bali' %}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -190,7 +190,7 @@
                         </div>
                         <div class="place-bottom">
                             <div><small>Starting from</small><strong>&#8377;48,000</strong></div>
-                            <a href="{% url 'signup' %}" class="btn btn-primary">View Details</a>
+                            <a href="{% url 'destination_detail' 'phuket' %}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -212,7 +212,7 @@
                         </div>
                         <div class="place-bottom">
                             <div><small>Starting from</small><strong>&#8377;60,000</strong></div>
-                            <a href="{% url 'signup' %}" class="btn btn-primary">View Details</a>
+                            <a href="{% url 'destination_detail' 'singapore' %}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -234,7 +234,7 @@
                         </div>
                         <div class="place-bottom">
                             <div><small>Starting from</small><strong>&#8377;85,000</strong></div>
-                            <a href="{% url 'signup' %}" class="btn btn-primary">View Details</a>
+                            <a href="{% url 'destination_detail' 'maldives' %}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -256,11 +256,34 @@
                         </div>
                         <div class="place-bottom">
                             <div><small>Starting from</small><strong>&#8377;1,20,000</strong></div>
-                            <a href="{% url 'signup' %}" class="btn btn-primary">View Details</a>
+                            <a href="{% url 'destination_detail' 'paris' %}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
             </div>
+            {% for p in extra_destinations %}
+            <div class="col-lg-4 col-md-6 place-item" data-region="{{ p.region }}">
+                <div class="place-card">
+                    <div class="place-image">
+                        <img src="{{ p.thumb }}" alt="{{ p.name }}" loading="lazy" onerror="this.style.display='none'">
+                        <span class="place-tag">{{ p.region }}</span>
+                    </div>
+                    <div class="place-body">
+                        <span class="place-country"><i class="bi bi-geo-alt"></i> {{ p.country }}</span>
+                        <h3>{{ p.name }}</h3>
+                        <p>{{ p.tagline }}</p>
+                        <div class="place-meta">
+                            <span><i class="bi bi-sun"></i> {{ p.best_time }}</span>
+                            <span><i class="bi bi-clock"></i> {{ p.duration }}</span>
+                        </div>
+                        <div class="place-bottom">
+                            <div><small>Starting from</small><strong>&#8377;{{ p.price }}</strong></div>
+                            <a href="{% url 'destination_detail' p.slug %}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
 
     </div>

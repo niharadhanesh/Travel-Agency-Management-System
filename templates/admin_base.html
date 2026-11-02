@@ -155,7 +155,8 @@
         <a href="{% url 'dashboard' %}" class="side-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><i class="bi bi-grid"></i> Dashboard</a>
         <a href="#" class="side-link"><i class="bi bi-calendar-check"></i> Bookings</a>
         <a href="#" class="side-link"><i class="bi bi-backpack"></i> Packages</a>
-        <a href="#" class="side-link"><i class="bi bi-geo-alt"></i> Destinations</a>
+        <a href="{% url 'admin_destinations' %}" class="side-link {% if request.resolver_match.url_name == 'admin_destinations' %}active{% endif %}"><i class="bi bi-geo-alt"></i> Destinations</a>
+        <a href="{% url 'add_destination' %}" class="side-link {% if request.resolver_match.url_name == 'add_destination' %}active{% endif %}"><i class="bi bi-plus-circle"></i> Add Destination</a>
         <a href="#" class="side-link"><i class="bi bi-people"></i> Customers</a>
 
         <p class="side-label">OTHER</p>
